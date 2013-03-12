@@ -48,6 +48,9 @@ public class TodoListManagerActivity extends Activity {
     			adapter.add(new Task(taskName));
     			break;
     		case R.id.menuItemDelete:
+    			 ListView taskList = (ListView)findViewById(R.id.lstTodoItems);
+    		     Task selected=(Task) taskList.getItemAtPosition(taskList.getSelectedItemPosition());
+    		     adapter.remove(selected);
     			break;
     	}
      return true;
