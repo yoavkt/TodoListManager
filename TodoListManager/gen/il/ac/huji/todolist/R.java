@@ -29,9 +29,10 @@ public final class R {
     public static final class id {
         public static final int LinearLayout1=0x7f090000;
         public static final int blue=0x7f090003;
-        public static final int buttonAdd=0x7f090001;
-        public static final int itemAdd=0x7f090005;
-        public static final int listCourses=0x7f090002;
+        public static final int edtNewItem=0x7f090001;
+        public static final int lstTodoItems=0x7f090002;
+        public static final int menuItemAdd=0x7f090005;
+        public static final int menuItemDelete=0x7f090006;
         public static final int red=0x7f090004;
     }
     public static final class layout {

@@ -1,5 +1,7 @@
 package il.ac.huji.todolist;
 
+
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 
 public class TodoListManagerActivity extends Activity {
@@ -22,21 +25,12 @@ public class TodoListManagerActivity extends Activity {
         setContentView(R.layout.activity_todo_list_manager);
         List<Task> tasks = new ArrayList<Task>();
         tasks.add(new Task(
-         "Introduction to Computer Science"));
-        tasks.add(new Task(
-         "Object Oriented Programming"));
-        tasks.add(new Task(
-         "Human Centric Mobile Computing"));
+         "Plan your day!"));
         ListView listCourses =
-         (ListView)findViewById(R.id.listCourses);
+         (ListView)findViewById(R.id.lstTodoItems);
         adapter = new TaskDisplayAdapter(this, tasks);
         listCourses.setAdapter(adapter);
-        findViewById(R.id.buttonAdd).setOnClickListener( new OnClickListener() {
-        		@Override
-        		public void onClick(View v) {
-        				adapter.add(new Task("iPhone Application Development"));
-        		}
-            });
+        
     }
            
 
@@ -48,9 +42,12 @@ public class TodoListManagerActivity extends Activity {
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+    	String taskName= ((EditText) findViewById(R.id.edtNewItem)).getText().toString();
     	switch (item.getItemId()) {
-    		case R.id.itemAdd:
-    			adapter.add(new Task("First Aid"));
+    		case R.id.menuItemAdd:
+    			adapter.add(new Task(taskName));
+    			break;
+    		case R.id.menuItemDelete:
     			break;
     	}
      return true;

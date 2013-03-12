@@ -10,16 +10,17 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity" >
 
-    <Button
-        android:id="@+id/buttonAdd"
-        android:layout_width="239dp"
+    <EditText
+        android:id="@+id/edtNewItem"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="18dp"
-        android:layout_marginTop="22dp"
-        android:text="Add" />
+        android:ems="10" >
+
+        <requestFocus />
+    </EditText>
 
     <ListView
-        android:id="@+id/listCourses"
+        android:id="@+id/lstTodoItems"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
     </ListView>

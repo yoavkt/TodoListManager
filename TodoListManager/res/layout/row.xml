@@ -8,14 +8,12 @@
         android:id="@+id/blue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Large Text"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:textColor= "#0000FF"/>
 
     <TextView
         android:id="@+id/red"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Medium Text"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:textColor= "#FF0000" />
 
 </LinearLayout>
