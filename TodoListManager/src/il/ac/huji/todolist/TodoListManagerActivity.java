@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
@@ -22,7 +23,10 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 public class TodoListManagerActivity extends Activity {
-private final String CALL_REGEX= "^call .*";
+	private final String CALL_REGEX= "^call .*";
+	private final String CALL_STRING= "Call ";
+	private final String TELE_STRING= "tel:";
+	
 	private ArrayAdapter<Task> adapter;
 	
     @Override
@@ -37,7 +41,7 @@ private final String CALL_REGEX= "^call .*";
         registerForContextMenu(listTasksView);
         
     }
-           
+    
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,ContextMenuInfo menuInfo) {
 			getMenuInflater().inflate(R.menu.add_new_todo_item, menu);
@@ -67,5 +71,30 @@ private final String CALL_REGEX= "^call .*";
     	}
      return true;
     }
-    
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo)
+		item.getMenuInfo();
+		int selectedItemIndex = info.position;
+		switch (item.getItemId()){
+			case R.id.menuItemCall:
+				Task task=adapter.getItem(selectedItemIndex);
+				String phone=task.get_taskTxt().replace(CALL_STRING, TELE_STRING);
+				Intent dial = new Intent(Intent.ACTION_DIAL,Uri.parse(phone));
+				startActivity(dial);
+			break;
+			case R.id.menuItemDelete:
+				adapter.remove(adapter.getItem(selectedItemIndex));
+			break;
+		}
+		return true;
+	}
+	@Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+     if (requestCode == 1986 && resultCode == RESULT_OK) {
+    	 String taskName = data.getStringExtra("taskName");
+    	 Date taskDate=(Date) data.getSerializableExtra("taskDate");
+    	 adapter.add(new Task(taskName, taskDate));
+     }
+    }
 }
