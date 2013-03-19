@@ -3,14 +3,15 @@ package il.ac.huji.todolist;
 
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
+
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -24,8 +25,7 @@ public class TodoListManagerActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_todo_list_manager);
         List<Task> tasks = new ArrayList<Task>();
-        tasks.add(new Task(
-         "Plan your day!"));
+        tasks.add(new Task("Plan your day!", new Date()));
         ListView listCourses =
          (ListView)findViewById(R.id.lstTodoItems);
         adapter = new TaskDisplayAdapter(this, tasks);
@@ -45,7 +45,7 @@ public class TodoListManagerActivity extends Activity {
     	String taskName= ((EditText) findViewById(R.id.edtNewItem)).getText().toString();
     	switch (item.getItemId()) {
     		case R.id.menuItemAdd:
-    			adapter.add(new Task(taskName));
+    			adapter.add(new Task(taskName,new Date()));
     			break;
     		case R.id.menuItemDelete:
     			 ListView taskList = (ListView)findViewById(R.id.lstTodoItems);

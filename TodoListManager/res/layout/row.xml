@@ -5,6 +5,24 @@
     android:orientation="vertical" >
 
     <TextView
+        android:id="@+id/txtTodoTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Large Text"
+        android:layout_marginLeft="30dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+    <TextView
+        android:id="@+id/txtTodoDueDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Large Text"
+        android:layout_marginLeft="30dp"
+        android:textColor= "#FF0000" 
+        android:textAppearance="?android:attr/textAppearanceMedium"/>
+    
+    
+	<TextView
         android:id="@+id/blue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -15,5 +33,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor= "#FF0000" />
-
+    
+    
 </LinearLayout>
