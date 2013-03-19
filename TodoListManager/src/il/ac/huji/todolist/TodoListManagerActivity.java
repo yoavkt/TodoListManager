@@ -9,15 +9,19 @@ import java.util.List;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
 public class TodoListManagerActivity extends Activity {
-
+private final String CALL_REGEX= "^call .*";
 	private ArrayAdapter<Task> adapter;
 	
     @Override
@@ -33,7 +37,19 @@ public class TodoListManagerActivity extends Activity {
         
     }
            
-
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,ContextMenuInfo menuInfo) {
+			getMenuInflater().inflate(R.menu.add_new_todo_item, menu);
+			
+			AdapterContextMenuInfo conMenut = (AdapterContextMenuInfo)menuInfo;
+			
+			int selectionIndex =conMenut.position;
+			Task task=adapter.getItem(selectionIndex);
+			menu.setHeaderTitle(task.get_taskTxt());
+			if(task.get_taskTxt().matches(CALL_REGEX)){
+					menu.add(0,R.id.menuItemCall, 0, task.get_taskTxt());
+			}
+}
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
