@@ -23,7 +23,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 public class TodoListManagerActivity extends Activity {
-	private final String CALL_REGEX= "^call .*";
+	private final String CALL_REGEX= "^Call .*";
 	private final String CALL_STRING= "Call ";
 	private final String TELE_STRING= "tel:";
 	
@@ -50,6 +50,7 @@ public class TodoListManagerActivity extends Activity {
 			int selectionIndex =conMenut.position;
 			Task task=adapter.getItem(selectionIndex);
 			menu.setHeaderTitle(task.get_taskTxt());
+			
 			if(task.get_taskTxt().matches(CALL_REGEX)){
 					menu.add(0,R.id.menuItemCall, 0, task.get_taskTxt());
 			}

@@ -18,7 +18,6 @@
         android:layout_height="wrap_content"
         android:text="Large Text"
         android:layout_marginLeft="30dp"
-        android:textColor= "#FF0000" 
         android:textAppearance="?android:attr/textAppearanceMedium"/>
     
     
