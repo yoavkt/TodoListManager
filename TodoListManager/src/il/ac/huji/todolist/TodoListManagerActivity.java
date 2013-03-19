@@ -9,6 +9,7 @@ import java.util.List;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Intent;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
@@ -30,10 +31,10 @@ private final String CALL_REGEX= "^call .*";
         setContentView(R.layout.activity_todo_list_manager);
         List<Task> tasks = new ArrayList<Task>();
         tasks.add(new Task("Plan your day!", new Date()));
-        ListView listCourses =
-         (ListView)findViewById(R.id.lstTodoItems);
+        ListView listTasksView = (ListView)findViewById(R.id.lstTodoItems);
         adapter = new TaskDisplayAdapter(this, tasks);
-        listCourses.setAdapter(adapter);
+        listTasksView.setAdapter(adapter);
+        registerForContextMenu(listTasksView);
         
     }
            
@@ -42,7 +43,6 @@ private final String CALL_REGEX= "^call .*";
 			getMenuInflater().inflate(R.menu.add_new_todo_item, menu);
 			
 			AdapterContextMenuInfo conMenut = (AdapterContextMenuInfo)menuInfo;
-			
 			int selectionIndex =conMenut.position;
 			Task task=adapter.getItem(selectionIndex);
 			menu.setHeaderTitle(task.get_taskTxt());
@@ -58,15 +58,11 @@ private final String CALL_REGEX= "^call .*";
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-    	String taskName= ((EditText) findViewById(R.id.edtNewItem)).getText().toString();
+    	
     	switch (item.getItemId()) {
     		case R.id.menuItemAdd:
-    			adapter.add(new Task(taskName,new Date()));
-    			break;
-    		case R.id.menuItemDelete:
-    			 ListView taskList = (ListView)findViewById(R.id.lstTodoItems);
-    		     Task selected=(Task) taskList.getItemAtPosition(taskList.getSelectedItemPosition());
-    		     adapter.remove(selected);
+    			Intent intent = new Intent(this, AddNewTodoItemActivity.class);
+    		     startActivityForResult(intent,1986);
     			break;
     	}
      return true;
