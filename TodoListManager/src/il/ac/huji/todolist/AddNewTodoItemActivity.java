@@ -19,13 +19,13 @@ public class AddNewTodoItemActivity extends Activity {
 		setContentView(R.layout.activity_add_new_todo_item);
 		findViewById(R.id.btnOK).setOnClickListener(new OnClickListener() {	
 			public void onClick(View v) {
-				//TODO: check for errores
+				
 				String taskName = ((EditText)findViewById(R.id.edtNewItem)).getText().toString();
 				DatePicker datePicker=(DatePicker)findViewById(R.id.datePicker);
 				Date taskDate=new Date(datePicker.getYear() - 1900, datePicker.getMonth(), datePicker.getDayOfMonth());
 				Intent resultIntent = new Intent();
-				resultIntent.putExtra("taskName", taskName);
-				resultIntent.putExtra("taskDate",taskDate );
+				resultIntent.putExtra("title", taskName);
+				resultIntent.putExtra("dueDate",taskDate );
 				setResult(RESULT_OK, resultIntent);
 				finish();
 			}

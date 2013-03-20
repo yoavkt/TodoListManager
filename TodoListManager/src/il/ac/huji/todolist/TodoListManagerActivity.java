@@ -94,8 +94,8 @@ public class TodoListManagerActivity extends Activity {
 	@Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
      if (requestCode == 1986 && resultCode == RESULT_OK) {
-    	 String taskName = data.getStringExtra("taskName");
-    	 Date taskDate=(Date) data.getSerializableExtra("taskDate");
+    	 String taskName = data.getStringExtra("title");
+    	 Date taskDate=(Date) data.getSerializableExtra("dueDate");
     	 adapter.add(new Task(taskName, taskDate));
      }
     }
