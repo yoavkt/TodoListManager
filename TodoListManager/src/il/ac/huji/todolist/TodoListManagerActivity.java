@@ -34,8 +34,8 @@ public class TodoListManagerActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_todo_list_manager);
         List<Task> tasks = new ArrayList<Task>();
-        tasks.add(new Task("Plan your day!", new Date()));
-        tasks.add(new Task("A task without a date!"));
+      //  tasks.add(new Task("Plan your day!", new Date()));
+       // tasks.add(new Task("A task without a date!"));
         ListView listTasksView = (ListView)findViewById(R.id.lstTodoItems);
         adapter = new TaskDisplayAdapter(this, tasks);
         listTasksView.setAdapter(adapter);
