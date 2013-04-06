@@ -1,26 +1,25 @@
 package il.ac.huji.todolist;
-
-
-
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import android.net.Uri;
-import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
+import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
+import com.parse.Parse;
+import com.parse.ParseObject;
+import com.parse.PushService;
 
 public class TodoListManagerActivity extends Activity {
 	private final String CALL_REGEX= "^Call .*";
@@ -32,12 +31,30 @@ public class TodoListManagerActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    	TaskDisplayAdapter adapter;
+    	SQLiteDatabase myDB;
+    	Cursor cursor;
+    	TodoDAL todo;
+        
         setContentView(R.layout.activity_todo_list_manager);
         List<Task> tasks = new ArrayList<Task>();
-      //  tasks.add(new Task("Plan your day!", new Date()));
-       // tasks.add(new Task("A task without a date!"));
-        ListView listTasksView = (ListView)findViewById(R.id.lstTodoItems);
-        adapter = new TaskDisplayAdapter(this, tasks);
+       // ListView listTasksView = (ListView)findViewById(R.id.lstTodoItems);
+       // adapter = new TaskDisplayAdapter(this, tasks);
+        
+
+        DBHelper helper = new DBHelper(this);
+        myDB = helper.getWritableDatabase();
+
+
+        cursor = myDB.query("todo",new String[] { "_id", "title", "due" },null, null, null, null, null);
+        String[] from = { "title", "due" };
+        int[] to = { R.id.txtTodoTitle, R.id.txtTodoDueDate };
+        adapter = new TaskDisplayAdapter(this,cursor, from, to);
+        listTasks.setAdapter(adapter);
+
+        todo=new TodoDAL(this);
+
+
         listTasksView.setAdapter(adapter);
         registerForContextMenu(listTasksView);
         
@@ -99,4 +116,13 @@ public class TodoListManagerActivity extends Activity {
     	 adapter.add(new Task(taskName, taskDate));
      }
     }
+	protected void forTesting()
+	{
+		 Parse.initialize(this, "NaEEoOzHnxvom1sy64RTMQwzmMXlHpL5XRvvvCoa", "pPR7u3HxoPX3ZOYCHR0Aps2a9Q35NZcnsBuqvVsF"); 
+	        ParseObject testObject = new ParseObject("TestObject");
+	        testObject.put("foo", "bar");
+	        testObject.saveInBackground();
+	        //  tasks.add(new Task("Plan your day!", new Date()));
+	        // tasks.add(new Task("A task without a date!"));
+	}
 }
