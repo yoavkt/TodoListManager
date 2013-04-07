@@ -25,52 +25,49 @@ public class TodoListManagerActivity extends Activity {
 	private final String CALL_REGEX= "^Call .*";
 	private final String CALL_STRING= "Call ";
 	private final String TELE_STRING= "tel:";
-	
+	private  TodoDAL todo;
+	private Cursor taskListCursor;
 	private ArrayAdapter<Task> adapter;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    	TaskDisplayAdapter adapter;
+    	
+        TaskDisplayAdapter adapter;
     	SQLiteDatabase myDB;
-    	Cursor cursor;
-    	TodoDAL todo;
+
+
         
         setContentView(R.layout.activity_todo_list_manager);
-        List<Task> tasks = new ArrayList<Task>();
-       // ListView listTasksView = (ListView)findViewById(R.id.lstTodoItems);
+        //List<Task> tasks = new ArrayList<Task>();
+        ListView listTasksView = (ListView)findViewById(R.id.lstTodoItems);
        // adapter = new TaskDisplayAdapter(this, tasks);
-        
+        registerForContextMenu(listTasksView);
 
         DBHelper helper = new DBHelper(this);
         myDB = helper.getWritableDatabase();
 
 
-        cursor = myDB.query("todo",new String[] { "_id", "title", "due" },null, null, null, null, null);
+        taskListCursor = myDB.query("todo",new String[] { "_id", "title", "due" },null, null, null, null, null);
         String[] from = { "title", "due" };
         int[] to = { R.id.txtTodoTitle, R.id.txtTodoDueDate };
-        adapter = new TaskDisplayAdapter(this,cursor, from, to);
-        listTasks.setAdapter(adapter);
-
+        adapter = new TaskDisplayAdapter(this,taskListCursor, from, to);
+        listTasksView.setAdapter(adapter);
+        listTasksView.setAdapter(adapter);
         todo=new TodoDAL(this);
 
-
-        listTasksView.setAdapter(adapter);
-        registerForContextMenu(listTasksView);
-        
     }
     
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,ContextMenuInfo menuInfo) {
-			getMenuInflater().inflate(R.menu.add_new_todo_item, menu);
 			
-			AdapterContextMenuInfo conMenut = (AdapterContextMenuInfo)menuInfo;
+		getMenuInflater().inflate(R.menu.add_new_todo_item, menu);	
+		AdapterContextMenuInfo conMenut = (AdapterContextMenuInfo)menuInfo;
 			int selectionIndex =conMenut.position;
-			Task task=adapter.getItem(selectionIndex);
-			menu.setHeaderTitle(task.get_taskTxt());
-			
-			if(task.get_taskTxt().matches(CALL_REGEX)){
-					menu.add(0,R.id.menuItemCall, 0, task.get_taskTxt());
+			Cursor taskCursor = (Cursor)adapter.getItem(selectionIndex);
+			menu.setHeaderTitle(taskCursor.getString(1));
+			if(taskCursor.getString(1).matches(CALL_REGEX)){
+					menu.add(0,R.id.menuItemCall, 0, taskCursor.getString(1));
 			}
 }
     @Override
@@ -92,18 +89,18 @@ public class TodoListManagerActivity extends Activity {
     }
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		AdapterContextMenuInfo info = (AdapterContextMenuInfo)
-		item.getMenuInfo();
-		int selectedItemIndex = info.position;
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo)item.getMenuInfo();
+	
+		Cursor taskCursor = (Cursor)adapter.getItem(info.position);
 		switch (item.getItemId()){
 			case R.id.menuItemCall:
-				Task task=adapter.getItem(selectedItemIndex);
-				String phone=task.get_taskTxt().replace(CALL_STRING, TELE_STRING);
-				Intent dial = new Intent(Intent.ACTION_DIAL,Uri.parse(phone));
+				Intent dial = new Intent(Intent.ACTION_DIAL,Uri.parse(myTask.getTitle().replace(CALL_STRING, TELE_STRING)));
 				startActivity(dial);
 			break;
 			case R.id.menuItemDelete:
-				adapter.remove(adapter.getItem(selectedItemIndex));
+				taskCursor.moveToPosition(info.position);
+				todo.delete(new Task(taskCursor));
+				taskListCursor.requery();
 			break;
 		}
 		return true;
@@ -111,14 +108,13 @@ public class TodoListManagerActivity extends Activity {
 	@Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
      if (requestCode == 1986 && resultCode == RESULT_OK) {
-    	 String taskName = data.getStringExtra("title");
-    	 Date taskDate=(Date) data.getSerializableExtra("dueDate");
-    	 adapter.add(new Task(taskName, taskDate));
+    	todo.insert(new Task(data.getStringExtra("title"),(Date) data.getSerializableExtra("dueDate")));
+    	taskListCursor.requery();
      }
     }
 	protected void forTesting()
 	{
-		 Parse.initialize(this, "NaEEoOzHnxvom1sy64RTMQwzmMXlHpL5XRvvvCoa", "pPR7u3HxoPX3ZOYCHR0Aps2a9Q35NZcnsBuqvVsF"); 
+		// Parse.initialize(this, R.string.parseApplication, R.string.clientKey); 
 	        ParseObject testObject = new ParseObject("TestObject");
 	        testObject.put("foo", "bar");
 	        testObject.saveInBackground();
