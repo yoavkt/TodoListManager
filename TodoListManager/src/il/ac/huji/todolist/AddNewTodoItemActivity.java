@@ -18,18 +18,22 @@ public class AddNewTodoItemActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_add_new_todo_item);
 		findViewById(R.id.btnOK).setOnClickListener(new OnClickListener() {	
+		
 			public void onClick(View v) {
 				
 				String taskName = ((EditText)findViewById(R.id.edtNewItem)).getText().toString();
 				DatePicker datePicker=(DatePicker)findViewById(R.id.datePicker);
 				Date taskDate=new Date(datePicker.getYear() - 1900, datePicker.getMonth(), datePicker.getDayOfMonth());
 				Intent resultIntent = new Intent();
+				
 				resultIntent.putExtra("title", taskName);
 				resultIntent.putExtra("dueDate",taskDate );
 				setResult(RESULT_OK, resultIntent);
 				finish();
+				
 			}
 		});
+		
 		findViewById(R.id.btnCancel).setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				setResult(RESULT_CANCELED);

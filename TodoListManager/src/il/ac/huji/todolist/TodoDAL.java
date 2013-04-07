@@ -51,84 +51,11 @@ public class TodoDAL {
 	}
 
 	public boolean update(ITodoItem todoItem) {
-		final ITodoItem t = todoItem;
-		ParseQuery query = new ParseQuery("todo");
-		query.whereEqualTo("title", todoItem.getTitle());
-		update = true;
-		query.findInBackground(new FindCallback() {
-
-			@Override
-			public void done(List<ParseObject> objects, ParseException arg1) {
-				if (arg1 != null) {
-					arg1.printStackTrace();
-				} else {
-					if (objects.isEmpty()) {
-						update = false;
-						return;
-					}
-					for (ParseObject obj : objects) {
-						obj.put("due", t.getDueDate().getTime());
-						try {
-							obj.save();
-							update = true;
-						} catch (ParseException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-
-					}
-				}
-			}
-		});
-		ContentValues values = new ContentValues();
-		if (!(todoItem.getDueDate().equals(null))) {
-			values.put("due", todoItem.getDueDate().getTime());
-		} else {
-			values.put("due", -1);
-		}
-		int succ = db.update("todo", values, "title=?",
-				new String[] { todoItem.getTitle() });
-		if (succ == -1) {
-			return false;
-		}
-		return update;
-
+		return true;
 	}
 
 	public boolean delete(ITodoItem todoItem) {
-		ParseQuery query = new ParseQuery("todo");
-		query.whereEqualTo("title", todoItem.getTitle());
-		delete = true;
-		query.findInBackground(new FindCallback() {
-
-			@Override
-			public void done(List<ParseObject> objects, ParseException arg1) {
-				if (arg1 != null) {
-					arg1.printStackTrace();
-				} else {
-					if (objects.isEmpty()) {
-						delete = false;
-						return;
-					}
-					for (ParseObject obj : objects) {
-						try {
-							obj.delete();
-
-						} catch (ParseException e) {
-							e.printStackTrace();
-						}
-					}
-				}
-			}
-		});
-
-		int succ = db.delete("todo", "title=?",
-				new String[] { todoItem.getTitle() });
-		if (succ == -1) {
-			return false;
-		}
-		return delete;
-
+	return true;		
 	}
 
 	public List<ITodoItem> all() {

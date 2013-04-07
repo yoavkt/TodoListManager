@@ -23,40 +23,40 @@ import com.parse.PushService;
 
 public class TodoListManagerActivity extends Activity {
 	private static final String TITLE = "title";
-	private static final String DUEDATE = "title";
+	private static final String DUEDATE = "due";
+	private static final String ID_HEADER="_id";
 	private final String CALL_REGEX= "^Call .*";
 	private final String CALL_STRING= "Call ";
 	private final String TELE_STRING= "tel:";
+	private final String TODO="todo";
+	TaskDisplayAdapter adapter;
 	private  TodoDAL todo;
 	private Cursor taskListCursor;
-	private ArrayAdapter<Task> adapter;
+	//private ArrayAdapter<Task> adapter;
+    
+	private SQLiteDatabase myDB;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    	
-        TaskDisplayAdapter adapter;
-    	SQLiteDatabase myDB;
+    	super.onCreate(savedInstanceState);
+    	setContentView(R.layout.activity_todo_list_manager);
+    	ListView listViewTasks = (ListView)findViewById(R.id.lstTodoItems);
+    	registerForContextMenu(listViewTasks);
+    	DBHelper helper = new DBHelper(this);
+    	myDB = helper.getWritableDatabase();
+    	taskListCursor = myDB.query(TODO,	new String[] {ID_HEADER, TITLE, DUEDATE }, null, null, null, null, null);
+    	String[] from = { TITLE, DUEDATE };
+    	int[] to = { R.id.txtTodoTitle, R.id.txtTodoDueDate };
+    	adapter = new TaskDisplayAdapter(this,
+    			taskListCursor, from, to);
+    	listViewTasks.setAdapter(adapter);
 
-
+    	todo=new TodoDAL(this);
+  //      todo.insert(new Task("Hello"));
+        int i=5;
+        i=i+1;
+//        taskListCursor.requery();       
         
-        setContentView(R.layout.activity_todo_list_manager);
-        //List<Task> tasks = new ArrayList<Task>();
-        ListView listTasksView = (ListView)findViewById(R.id.lstTodoItems);
-       // adapter = new TaskDisplayAdapter(this, tasks);
-        registerForContextMenu(listTasksView);
-
-        DBHelper helper = new DBHelper(this);
-        myDB = helper.getWritableDatabase();
-
-
-        taskListCursor = myDB.query("todo",new String[] { "_id", "title", "due" },null, null, null, null, null);
-        String[] from = { "title", "due" };
-        int[] to = { R.id.txtTodoTitle, R.id.txtTodoDueDate };
-        adapter = new TaskDisplayAdapter(this,taskListCursor, from, to);
-        listTasksView.setAdapter(adapter);
-        listTasksView.setAdapter(adapter);
-        todo=new TodoDAL(this);
 
     }
     
@@ -80,7 +80,7 @@ public class TodoListManagerActivity extends Activity {
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-    	
+		
     	switch (item.getItemId()) {
     		case R.id.menuItemAdd:
     			Intent intent = new Intent(this, AddNewTodoItemActivity.class);
@@ -113,6 +113,9 @@ public class TodoListManagerActivity extends Activity {
      if (requestCode == 1986 && resultCode == RESULT_OK) {
     	todo.insert(new Task(data.getStringExtra(TITLE),(Date) data.getSerializableExtra(DUEDATE)));
     	taskListCursor.requery();
+    	int i=5;
+    	if (i==6)
+    		i=0;
      }
     }
 	protected void forTesting()
