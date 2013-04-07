@@ -22,6 +22,8 @@ import com.parse.ParseObject;
 import com.parse.PushService;
 
 public class TodoListManagerActivity extends Activity {
+	private static final String TITLE = "title";
+	private static final String DUEDATE = "title";
 	private final String CALL_REGEX= "^Call .*";
 	private final String CALL_STRING= "Call ";
 	private final String TELE_STRING= "tel:";
@@ -92,6 +94,7 @@ public class TodoListManagerActivity extends Activity {
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo)item.getMenuInfo();
 	
 		Cursor taskCursor = (Cursor)adapter.getItem(info.position);
+		Task myTask= new Task(taskCursor);
 		switch (item.getItemId()){
 			case R.id.menuItemCall:
 				Intent dial = new Intent(Intent.ACTION_DIAL,Uri.parse(myTask.getTitle().replace(CALL_STRING, TELE_STRING)));
@@ -99,7 +102,7 @@ public class TodoListManagerActivity extends Activity {
 			break;
 			case R.id.menuItemDelete:
 				taskCursor.moveToPosition(info.position);
-				todo.delete(new Task(taskCursor));
+				todo.delete(myTask);
 				taskListCursor.requery();
 			break;
 		}
@@ -108,7 +111,7 @@ public class TodoListManagerActivity extends Activity {
 	@Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
      if (requestCode == 1986 && resultCode == RESULT_OK) {
-    	todo.insert(new Task(data.getStringExtra("title"),(Date) data.getSerializableExtra("dueDate")));
+    	todo.insert(new Task(data.getStringExtra(TITLE),(Date) data.getSerializableExtra(DUEDATE)));
     	taskListCursor.requery();
      }
     }
