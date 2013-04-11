@@ -2,6 +2,8 @@ package il.ac.huji.todolist;
 
 import java.util.Date;
 
+import com.parse.ParseObject;
+
 import android.database.Cursor;
 
 
@@ -23,10 +25,15 @@ public class Task implements ITodoItem {
 		_taskTxt=c.getString(1);
 		_date=new Date(c.getLong(2));
 	}
+	public Task(ParseObject i, String titleField, String dateField) {
+		_taskTxt=i.getString(titleField);
+		_date=new Date(i.getInt(dateField));
+	}
 	public String getTitle() {
 		return _taskTxt;
 	}
 	public Date getDueDate() {
+		
 		return _date;
 	}
 	public void set_taskTxt(String _taskTxt) {
@@ -35,4 +42,5 @@ public class Task implements ITodoItem {
 	public void set_date(Date _date) {
 		this._date = _date;
 	}
+	
 }

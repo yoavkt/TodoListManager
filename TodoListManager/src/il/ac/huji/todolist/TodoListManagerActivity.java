@@ -52,10 +52,10 @@ public class TodoListManagerActivity extends Activity {
     	listViewTasks.setAdapter(adapter);
 
     	todo=new TodoDAL(this);
-  //      todo.insert(new Task("Hello"));
+        todo.insert(new Task("Hello2",new Date()));
         int i=5;
         i=i+1;
-//        taskListCursor.requery();       
+       taskListCursor.requery();       
         
 
     }

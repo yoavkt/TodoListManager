@@ -1,8 +1,9 @@
 package il.ac.huji.todolist;
 
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.json.JSONObject;
 
 import com.parse.FindCallback;
 import com.parse.Parse;
@@ -19,11 +20,17 @@ public class TodoDAL {
 	private SQLiteDatabase db;
 	boolean delete = true;
 	protected boolean update;
+	private final String CLASS_NAME = "todo";
+	private final String TITLE = "title";
+	private final String DUEDATE = "due";
+	private boolean ParseUpdateFlag;
+	private boolean ParseDeleteFlag;
 
 	public TodoDAL(Context context) {
 		_context = context;
 
-		Parse.initialize(_context, "NaEEoOzHnxvom1sy64RTMQwzmMXlHpL5XRvvvCoa", "pPR7u3HxoPX3ZOYCHR0Aps2a9Q35NZcnsBuqvVsF");
+		Parse.initialize(_context, "NaEEoOzHnxvom1sy64RTMQwzmMXlHpL5XRvvvCoa",
+				"pPR7u3HxoPX3ZOYCHR0Aps2a9Q35NZcnsBuqvVsF");
 
 		DBHelper helper = new DBHelper(_context);
 		db = helper.getWritableDatabase();
@@ -31,48 +38,121 @@ public class TodoDAL {
 	}
 
 	public boolean insert(ITodoItem todoItem) {
-		ParseObject parseObject = new ParseObject("todo");
-		parseObject.put("title", todoItem.getTitle());
-		parseObject.put("due", todoItem.getDueDate().getTime());
-		parseObject.saveInBackground();
-		ContentValues values = new ContentValues();
-		values.put("title", todoItem.getTitle());
-		if (!(todoItem.getDueDate().equals(null))) {
-			values.put("due", todoItem.getDueDate().getTime());
-		} else {
-			values.put("due", -1);
-		}
-		long succ = db.insert("todo", null, values);
-		if (succ == -1) {
-			return false;
-		}
-		return true;
+		return (insertParse(todoItem) && insertLocalDB(todoItem));
+	}
 
+	private boolean insertParse(ITodoItem todoItem) {
+		ParseObject parseObject = new ParseObject(CLASS_NAME);
+		parseObject.put(TITLE, todoItem.getTitle());
+		if (todoItem.getDueDate() != null)
+			parseObject.put(DUEDATE, todoItem.getDueDate().getTime());
+		else
+			parseObject.put(DUEDATE, JSONObject.NULL);
+		parseObject.saveInBackground();
+		return true;
+	}
+
+	private boolean insertLocalDB(ITodoItem todoItem) {
+		ContentValues values = new ContentValues();
+		values.put(TITLE, todoItem.getTitle());
+		if (todoItem.getDueDate() != null)
+			values.put(DUEDATE, todoItem.getDueDate().getTime());
+		else
+			values.putNull(DUEDATE);
+		return (!(db.insert(CLASS_NAME, null, values) == -1));
 	}
 
 	public boolean update(ITodoItem todoItem) {
-		return true;
+		return (updateParse(todoItem) && updateLocalDB(todoItem));
+	}
+
+	private boolean updateLocalDB(ITodoItem todoItem) {
+		ContentValues CV = new ContentValues();
+		if (todoItem.getDueDate() != null)
+			CV.put("due", todoItem.getDueDate().getTime());
+		else
+			CV.put("due", -1);
+		return (db.update("todo", CV, "title=?",
+				new String[] { todoItem.getTitle() }) < 1);
+	}
+
+	private boolean updateParse(ITodoItem todoItem) {
+		ParseUpdateFlag = false;
+		final ITodoItem tempTodo = todoItem;
+		if (todoItem.getTitle() == null)
+			return ParseUpdateFlag;
+		ParseQuery pq = new ParseQuery(CLASS_NAME);
+		pq.findInBackground(new FindCallback() {
+			@Override
+			public void done(List<ParseObject> objects, ParseException e) {
+				if (e != null) {
+					e.printStackTrace();
+					return;
+				}
+				if (objects.isEmpty())
+					return;
+				for (ParseObject po : objects) {
+					if (tempTodo.getDueDate() != null)
+						po.put(DUEDATE, tempTodo.getDueDate().getTime());
+					else
+						po.put(DUEDATE, JSONObject.NULL);
+					ParseUpdateFlag = true;
+				}
+
+			}
+		});
+		return ParseUpdateFlag;
 	}
 
 	public boolean delete(ITodoItem todoItem) {
-	return true;		
+		return (deleteParse(todoItem) && deleteLocalDB(todoItem));
+	}
+
+	public boolean deleteParse(ITodoItem todoItem) {
+		if (todoItem.getTitle() == null)
+			return false;
+		ParseQuery query = new ParseQuery(CLASS_NAME);
+		query.whereEqualTo(TITLE, todoItem.getTitle());
+		ParseDeleteFlag = false;
+		query.findInBackground(new FindCallback() {
+
+			@Override
+			public void done(List<ParseObject> objects, ParseException arg1) {
+				if (arg1 != null) {
+					arg1.printStackTrace();
+				} else {
+					if (objects.isEmpty()) 
+						return;
+					for (ParseObject obj : objects) {
+						try {
+							obj.delete();
+							ParseDeleteFlag=true;
+						} catch (ParseException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+		});
+		return ParseDeleteFlag;
+
+	}
+
+	public boolean deleteLocalDB(ITodoItem todoItem) {
+
+		return (db.delete("todo", "title=?",
+				new String[] { todoItem.getTitle() }) < 1);
 	}
 
 	public List<ITodoItem> all() {
-		ParseQuery query = new ParseQuery("todo");
+		ParseQuery query = new ParseQuery(CLASS_NAME);
 		List<ITodoItem> list = new ArrayList<ITodoItem>();
-
 		try {
-			for (ParseObject i : query.find()) {
-				list.add(new Task(i.getString("title"), new Date(i.getInt("due"))));
-
-			}
-
+			for (ParseObject i : query.find())
+				list.add(new Task(i, TITLE, DUEDATE));
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 		return list;
 	}
 }
