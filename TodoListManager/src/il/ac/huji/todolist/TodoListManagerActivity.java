@@ -3,6 +3,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
@@ -32,6 +36,7 @@ public class TodoListManagerActivity extends Activity {
 	TaskDisplayAdapter adapter;
 	private  TodoDAL todo;
 	private Cursor taskListCursor;
+	private boolean Testing=false;
 	//private ArrayAdapter<Task> adapter;
     
 	private SQLiteDatabase myDB;
@@ -52,14 +57,17 @@ public class TodoListManagerActivity extends Activity {
     	listViewTasks.setAdapter(adapter);
 
     	todo=new TodoDAL(this);
-        todo.insert(new Task("Hello2",new Date()));
-        int i=5;
-        i=i+1;
-       taskListCursor.requery();       
-        
+        if (Testing){
+        	Date d= new Date();
+        	d.setDate(5);
+        	//todo.insert(new Task(d.toLocaleString(),d));
+        	todo.update(new Task("Hello", new Date(-1)));
+        	todo.insert(new Task("Hello4"));
+        	taskListCursor.requery(); 
+        }
 
     }
-    
+ 
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,ContextMenuInfo menuInfo) {
 			
@@ -113,18 +121,7 @@ public class TodoListManagerActivity extends Activity {
      if (requestCode == 1986 && resultCode == RESULT_OK) {
     	todo.insert(new Task(data.getStringExtra(TITLE),(Date) data.getSerializableExtra(DUEDATE)));
     	taskListCursor.requery();
-    	int i=5;
-    	if (i==6)
-    		i=0;
      }
     }
-	protected void forTesting()
-	{
-		// Parse.initialize(this, R.string.parseApplication, R.string.clientKey); 
-	        ParseObject testObject = new ParseObject("TestObject");
-	        testObject.put("foo", "bar");
-	        testObject.saveInBackground();
-	        //  tasks.add(new Task("Plan your day!", new Date()));
-	        // tasks.add(new Task("A task without a date!"));
-	}
+	
 }

@@ -50,7 +50,7 @@ public TaskDisplayAdapter(Context context,
 	TextView txtDate = (TextView)view.findViewById(R.id.txtTodoDueDate);
 	
 
-	if (cursor.getLong(2)==-1)
+	if (cursor.isNull(2))
 		txtDate.setText(DUE_DATE_STRING);
 	else
 	{

@@ -29,12 +29,19 @@ public class Task implements ITodoItem {
 		_taskTxt=i.getString(titleField);
 		_date=new Date(i.getInt(dateField));
 	}
+	public Task(ParseObject i, String titleField) {
+		_taskTxt=i.getString(titleField);
+		_date=null;
+	}
 	public String getTitle() {
 		return _taskTxt;
 	}
 	public Date getDueDate() {
 		
 		return _date;
+	}
+	public boolean isNullDate(){
+		return (_date.equals(null));
 	}
 	public void set_taskTxt(String _taskTxt) {
 		this._taskTxt = _taskTxt;

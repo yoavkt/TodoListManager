@@ -63,39 +63,44 @@ public class TodoDAL {
 	}
 
 	public boolean update(ITodoItem todoItem) {
-		return (updateParse(todoItem) && updateLocalDB(todoItem));
+		boolean res=updateLocalDB(todoItem);
+		res=res&updateParse(todoItem);
+		return update;
+
 	}
 
 	private boolean updateLocalDB(ITodoItem todoItem) {
 		ContentValues CV = new ContentValues();
 		if (todoItem.getDueDate() != null)
-			CV.put("due", todoItem.getDueDate().getTime());
+			CV.put(DUEDATE, todoItem.getDueDate().getTime());
 		else
-			CV.put("due", -1);
-		return (db.update("todo", CV, "title=?",
+			CV.putNull(DUEDATE);
+		return (db.update(CLASS_NAME, CV, "title=?",
 				new String[] { todoItem.getTitle() }) < 1);
 	}
 
 	private boolean updateParse(ITodoItem todoItem) {
 		ParseUpdateFlag = false;
+
 		final ITodoItem tempTodo = todoItem;
 		if (todoItem.getTitle() == null)
 			return ParseUpdateFlag;
 		ParseQuery pq = new ParseQuery(CLASS_NAME);
+		pq.whereEqualTo(TITLE, todoItem.getTitle());
 		pq.findInBackground(new FindCallback() {
 			@Override
 			public void done(List<ParseObject> objects, ParseException e) {
-				if (e != null) {
-					e.printStackTrace();
-					return;
-				}
+				
 				if (objects.isEmpty())
 					return;
 				for (ParseObject po : objects) {
-					if (tempTodo.getDueDate() != null)
+					if (tempTodo.getDueDate() != null) {
 						po.put(DUEDATE, tempTodo.getDueDate().getTime());
-					else
+						po.saveInBackground();
+					} else {
 						po.put(DUEDATE, JSONObject.NULL);
+						po.saveInBackground();
+					}
 					ParseUpdateFlag = true;
 				}
 
@@ -113,7 +118,7 @@ public class TodoDAL {
 			return false;
 		ParseQuery query = new ParseQuery(CLASS_NAME);
 		query.whereEqualTo(TITLE, todoItem.getTitle());
-		ParseDeleteFlag = false;
+		ParseDeleteFlag = true;
 		query.findInBackground(new FindCallback() {
 
 			@Override
@@ -121,12 +126,13 @@ public class TodoDAL {
 				if (arg1 != null) {
 					arg1.printStackTrace();
 				} else {
-					if (objects.isEmpty()) 
+					if (objects.isEmpty()) {
+						ParseDeleteFlag = false;
 						return;
+					}
 					for (ParseObject obj : objects) {
 						try {
 							obj.delete();
-							ParseDeleteFlag=true;
 						} catch (ParseException e) {
 							e.printStackTrace();
 						}
@@ -139,7 +145,6 @@ public class TodoDAL {
 	}
 
 	public boolean deleteLocalDB(ITodoItem todoItem) {
-
 		return (db.delete("todo", "title=?",
 				new String[] { todoItem.getTitle() }) < 1);
 	}
@@ -149,7 +154,10 @@ public class TodoDAL {
 		List<ITodoItem> list = new ArrayList<ITodoItem>();
 		try {
 			for (ParseObject i : query.find())
-				list.add(new Task(i, TITLE, DUEDATE));
+				if (i.getJSONObject(DUEDATE).equals(JSONObject.NULL))
+					list.add(new Task(i, TITLE));
+				else
+					list.add(new Task(i, TITLE, DUEDATE));
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
