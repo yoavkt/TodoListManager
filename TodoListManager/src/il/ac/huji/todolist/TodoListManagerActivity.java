@@ -61,8 +61,9 @@ public class TodoListManagerActivity extends Activity {
         	Date d= new Date();
         	d.setDate(5);
         	//todo.insert(new Task(d.toLocaleString(),d));
-        	todo.update(new Task("Hello", new Date(-1)));
-        	todo.insert(new Task("Hello4"));
+        	todo.delete(new Task("Hello", new Date(-1)));
+        	todo.delete(new Task("Hello4"));
+        	todo.delete(new Task("Hello2"));
         	taskListCursor.requery(); 
         }
 
