@@ -71,5 +71,10 @@ public class flickrHandler {
 		}
 		return null;
 	}
+
+	public void downloadFromFlickr(String stringExtra) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

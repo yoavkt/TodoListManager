@@ -38,8 +38,8 @@ public class ThumbnailDisplayAdapter extends BaseAdapter  {
 	        } else {
 	            imageView = (ImageView) convertView;
 	        }
-
-	        imageView.setImageBitmap(_flickrARR.get(position).getImageAsBitMap());
+	        if(position<30)
+	        	imageView.setImageBitmap(_flickrARR.get(position).getImageAsBitMap());
 	        return imageView;
 	}
 

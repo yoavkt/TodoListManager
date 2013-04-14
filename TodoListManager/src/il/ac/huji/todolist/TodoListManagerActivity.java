@@ -33,15 +33,17 @@ public class TodoListManagerActivity extends Activity {
 	private static final String TITLE = "title";
 	private static final String DUEDATE = "due";
 	private static final String ID_HEADER="_id";
+	private static final String PICTURE="thumbnail";
+	
 	private final String CALL_REGEX= "^Call .*";
 	private final String CALL_STRING= "Call ";
 	private final String TELE_STRING= "tel:";
 	private final String TODO="todo";
-	private final String PICTURE="Tumbnail";
+
 	TaskDisplayAdapter adapter;
 	private  TodoDAL todo;
 	private Cursor taskListCursor;
-	private boolean Testing=true;
+	private boolean Testing=false;
 	//private ArrayAdapter<Task> adapter;
     
 	private SQLiteDatabase myDB;
@@ -54,9 +56,10 @@ public class TodoListManagerActivity extends Activity {
     	registerForContextMenu(listViewTasks);
     	DBHelper helper = new DBHelper(this);
     	myDB = helper.getWritableDatabase();
-    	taskListCursor = myDB.query(TODO,	new String[] {ID_HEADER, TITLE, DUEDATE }, null, null, null, null, null);
-    	String[] from = { TITLE, DUEDATE };
-    	int[] to = { R.id.txtTodoTitle, R.id.txtTodoDueDate };
+    	String[] from = { TITLE, DUEDATE, PICTURE};
+    	int[] to = { R.id.txtTodoTitle, R.id.txtTodoDueDate, R.id.imageViewTodoThmb};
+    	taskListCursor = myDB.query(TODO,	new String[] {ID_HEADER, TITLE, DUEDATE, "thumbnail" },null, null, null, null, null);
+
     	adapter = new TaskDisplayAdapter(this, taskListCursor, from, to);
     	listViewTasks.setAdapter(adapter);
     	
@@ -77,10 +80,6 @@ public class TodoListManagerActivity extends Activity {
     public void toTest() throws IOException, JSONException{
     	flickrHandler fh=new flickrHandler();
     	 Bitmap b=fh.getImageArrayListFromFlickr("cat").get(0).getImageAsBitMap();
-    	
-    	int i=1;
-    
-    	
     }
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,ContextMenuInfo menuInfo) {
@@ -128,8 +127,11 @@ public class TodoListManagerActivity extends Activity {
 				taskListCursor.requery();
 			break;
 			case R.id.menuItemThumbnail:
+				taskCursor.moveToPosition(info.position);
 				Intent intent = new Intent(this, AddThmblnlActivity.class);
    		     	startActivityForResult(intent,1987);
+   		     	int i=1;
+   		     	i++;
 			break;
 			
 		}
@@ -139,12 +141,16 @@ public class TodoListManagerActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		//TODO:  change this to a switch inside an if
 		if (requestCode == 1986 && resultCode == RESULT_OK) {
-    	todo.insert(new Task(data.getStringExtra(TITLE),(Date) data.getSerializableExtra(DUEDATE)));
-    	taskListCursor.requery();
+			todo.insert(new Task(data.getStringExtra(TITLE),(Date) data.getSerializableExtra(DUEDATE)));
+    		taskListCursor.requery();
 		}
 		if (requestCode == 1987 && resultCode == RESULT_OK) {
-    	 todo.updatePicture(data.getStringExtra(PICTURE));
+			todo.updatePicture(data.getStringExtra(PICTURE));
+			flickrHandler fh=new flickrHandler();
+			fh.downloadFromFlickr(data.getStringExtra(PICTURE));
           	taskListCursor.requery();
+		     	int i=1;
+		     	i++;
 		}
     }
 	

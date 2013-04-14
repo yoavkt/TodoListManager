@@ -23,13 +23,15 @@ import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 public class AddThmblnlActivity extends Activity {
  
 	private ImageView imageMap;
 	private Bitmap map;
 	private Context thisForm;
-	
+	private String selePicURL;
+	private ArrayList<flickrImage> flickrARR=new ArrayList<flickrImage>();
 	ThumbnailDisplayAdapter adapter;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -45,14 +47,9 @@ public class AddThmblnlActivity extends Activity {
 					((EditText)findViewById(R.id.editTextThumbnailSearch)).setText("Enter a search String");
 				}
 				else{
-					
-					ImageView imageView = (ImageView) findViewById(R.id.imageView1);
 					flickrHandler fh=new flickrHandler();
-					ArrayList<flickrImage> flickrARR=new ArrayList<flickrImage>();
 					try {
 						flickrARR=fh.getImageArrayListFromFlickr(searchString);
-						imageView.setImageBitmap(fh.getImageArrayListFromFlickr("Cat").get(0).getImageAsBitMap());
-						imageView.requestLayout();
 					} catch (IOException e) {
 						e.printStackTrace();
 					} catch (JSONException e) {
@@ -64,12 +61,16 @@ public class AddThmblnlActivity extends Activity {
 				    gridview.setAdapter(new ThumbnailDisplayAdapter(thisForm, flickrARR));
 				    
 				    gridview.setOnItemClickListener(new OnItemClickListener() {
-				        public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-				           // Toast.makeText(HelloGridView.this, "" + position, Toast.LENGTH_SHORT).show();
-				        	((EditText)findViewById(R.id.editTextThumbnailSearch)).setText(Integer.toString(   position));
+				        public void onItemClick(AdapterView<?> parent, View v, int position, long id){
+				        	selePicURL=flickrARR.get(position).getStaticLocation();
+						    Intent resultIntent = new Intent();
+							resultIntent.putExtra("thumbnail",selePicURL );
+							
+							setResult(RESULT_OK, resultIntent);
+							finish();
 				        }
 				    });
-					//finish();
+
 				}	
 			}
 		});

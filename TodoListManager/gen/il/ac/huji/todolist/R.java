@@ -27,24 +27,24 @@ public final class R {
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int LinearLayout1=0x7f090009;
+        public static final int LinearLayout1=0x7f090008;
         public static final int action_settings=0x7f090013;
         public static final int blue=0x7f09000e;
         public static final int btnCancel=0x7f090002;
         public static final int btnOK=0x7f090003;
         public static final int btnTHBCancel=0x7f090007;
-        public static final int btnTHBOK=0x7f090005;
+        public static final int btnTHBOK=0x7f090006;
         public static final int datePicker=0x7f090001;
         public static final int editTextThumbnailSearch=0x7f090004;
         public static final int edtNewItem=0x7f090000;
-        public static final int gridViewTHMB=0x7f090008;
-        public static final int imageView1=0x7f090006;
-        public static final int lstTodoItems=0x7f09000a;
+        public static final int gridViewTHMB=0x7f090005;
+        public static final int imageViewTodoThmb=0x7f09000b;
+        public static final int lstTodoItems=0x7f090009;
         public static final int menuItemAdd=0x7f090014;
         public static final int menuItemCall=0x7f090011;
         public static final int menuItemDelete=0x7f090010;
         public static final int menuItemThumbnail=0x7f090012;
-        public static final int myImageView=0x7f09000b;
+        public static final int myImageView=0x7f09000a;
         public static final int red=0x7f09000f;
         public static final int txtTodoDueDate=0x7f09000d;
         public static final int txtTodoTitle=0x7f09000c;
