@@ -1,4 +1,5 @@
 package il.ac.huji.todolist;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -6,11 +7,14 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import org.json.JSONException;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -33,10 +37,11 @@ public class TodoListManagerActivity extends Activity {
 	private final String CALL_STRING= "Call ";
 	private final String TELE_STRING= "tel:";
 	private final String TODO="todo";
+	private final String PICTURE="Tumbnail";
 	TaskDisplayAdapter adapter;
 	private  TodoDAL todo;
 	private Cursor taskListCursor;
-	private boolean Testing=false;
+	private boolean Testing=true;
 	//private ArrayAdapter<Task> adapter;
     
 	private SQLiteDatabase myDB;
@@ -52,23 +57,31 @@ public class TodoListManagerActivity extends Activity {
     	taskListCursor = myDB.query(TODO,	new String[] {ID_HEADER, TITLE, DUEDATE }, null, null, null, null, null);
     	String[] from = { TITLE, DUEDATE };
     	int[] to = { R.id.txtTodoTitle, R.id.txtTodoDueDate };
-    	adapter = new TaskDisplayAdapter(this,
-    			taskListCursor, from, to);
+    	adapter = new TaskDisplayAdapter(this, taskListCursor, from, to);
     	listViewTasks.setAdapter(adapter);
-
+    	
     	todo=new TodoDAL(this);
         if (Testing){
-        	Date d= new Date();
-        	d.setDate(5);
-        	//todo.insert(new Task(d.toLocaleString(),d));
-        	todo.delete(new Task("Hello", new Date(-1)));
-        	todo.delete(new Task("Hello4"));
-        	todo.delete(new Task("Hello2"));
-        	taskListCursor.requery(); 
+        	try {
+				toTest();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         }
 
     }
- 
+    public void toTest() throws IOException, JSONException{
+    	flickrHandler fh=new flickrHandler();
+    	 Bitmap b=fh.getImageArrayListFromFlickr("cat").get(0).getImageAsBitMap();
+    	
+    	int i=1;
+    
+    	
+    }
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,ContextMenuInfo menuInfo) {
 			
@@ -114,15 +127,25 @@ public class TodoListManagerActivity extends Activity {
 				todo.delete(myTask);
 				taskListCursor.requery();
 			break;
+			case R.id.menuItemThumbnail:
+				Intent intent = new Intent(this, AddThmblnlActivity.class);
+   		     	startActivityForResult(intent,1987);
+			break;
+			
 		}
 		return true;
 	}
 	@Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-     if (requestCode == 1986 && resultCode == RESULT_OK) {
+		//TODO:  change this to a switch inside an if
+		if (requestCode == 1986 && resultCode == RESULT_OK) {
     	todo.insert(new Task(data.getStringExtra(TITLE),(Date) data.getSerializableExtra(DUEDATE)));
     	taskListCursor.requery();
-     }
+		}
+		if (requestCode == 1987 && resultCode == RESULT_OK) {
+    	 todo.updatePicture(data.getStringExtra(PICTURE));
+          	taskListCursor.requery();
+		}
     }
 	
 }

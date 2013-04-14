@@ -19,11 +19,6 @@ public class TaskDisplayAdapter extends SimpleCursorAdapter {
 	private final String DUE_DATE_STRING="No due date";
 	private final String STRING_FORMAT="dd/MM/yyyy";
 	
-	/*public TaskDisplayAdapter(TodoListManagerActivity activity, List<Task> tasks) {
-			super(activity, android.R.layout.simple_list_item_1, tasks);
-	}*/
-
-	
 public TaskDisplayAdapter(Context context,
 		Cursor cursor, String[] from, int[] to) {
 			super(context,R.layout.row, cursor, from, to);
@@ -37,16 +32,12 @@ public TaskDisplayAdapter(Context context,
 	
 	Cursor cursor = (Cursor) getItem(position);
 	cursor.moveToPosition(position);
-	
-	//Task task = getItem(position);
 	LayoutInflater inflater = (LayoutInflater) _context
 			.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	View view = inflater.inflate(R.layout.row, null);
-	
+
 	TextView txtName = (TextView)view.findViewById(R.id.txtTodoTitle);
-	//txtName.setText(task.get_taskTxt());
 	txtName.setText(cursor.getString(1));
-	//TextView txtDate = (TextView)view.findViewById(R.id.txtTodoDueDate);
 	TextView txtDate = (TextView)view.findViewById(R.id.txtTodoDueDate);
 	
 

@@ -163,4 +163,9 @@ public class TodoDAL {
 		}
 		return list;
 	}
+
+	public boolean updatePicture(String stringExtra) {
+		// TODO Auto-generated method stub
+		return true;
+	}
 }

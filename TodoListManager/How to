@@ -9,3 +9,28 @@ Push an existing repository from the command line
 
 git remote add origin https://github.com/yoavkt/asd.git
 git push -u origin master
+
+
+
+git rm -r one-of-the-directories
+git commit -m "Remove duplicated directory"
+git push origin master
+
+
+
+1) Delete the v0.4 tag locally: git tag -d v0.4
+2) Delete the v0.4 tag on GitHub (which removes its download link): git push origin :v0.4
+3) Add a new tag for the newest stable release: git tag -a v0.5 -m "Version 0.5 Stable"
+4) Push the latest tag to GitHub (two dashes): git push --tags
+
+
+ 	TodoListManager
+
+Key:
+6478053b90635698cb4afe8e2430a657
+
+Secret:
+e099f239f11378b6 
+
+http://api.flickr.com/services/rest/?method=flickr.photos.search&tags=cat&format=json&api_key=6478053b90635698cb4afe8e2430a657&per_page=5&nojsoncallback=1
+http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=6478053b90635698cb4afe8e2430a657&text=cat&per_page=20";&format=json&jsoncallback=?

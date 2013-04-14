@@ -20,7 +20,7 @@ public class AddNewTodoItemActivity extends Activity {
 		findViewById(R.id.btnOK).setOnClickListener(new OnClickListener() {	
 		
 			public void onClick(View v) {
-				
+			
 				String taskName = ((EditText)findViewById(R.id.edtNewItem)).getText().toString();
 				DatePicker datePicker=(DatePicker)findViewById(R.id.datePicker);
 				Date taskDate=new Date(datePicker.getYear() - 1900, datePicker.getMonth(), datePicker.getDayOfMonth());
@@ -31,7 +31,8 @@ public class AddNewTodoItemActivity extends Activity {
 				setResult(RESULT_OK, resultIntent);
 				finish();
 				
-			}
+				}
+				
 		});
 		
 		findViewById(R.id.btnCancel).setOnClickListener(new OnClickListener() {
