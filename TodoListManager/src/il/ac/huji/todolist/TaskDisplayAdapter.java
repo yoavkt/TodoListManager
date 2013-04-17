@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -23,7 +24,6 @@ public class TaskDisplayAdapter extends SimpleCursorAdapter {
 	private Context _context;
 	private final String DUE_DATE_STRING = "No due date";
 	private final String STRING_FORMAT = "dd/MM/yyyy";
-
 	public TaskDisplayAdapter(Context context, Cursor cursor, String[] from,
 			int[] to) {
 		super(context, R.layout.row, cursor, from, to);
@@ -61,7 +61,6 @@ public class TaskDisplayAdapter extends SimpleCursorAdapter {
 		if (!cursor.isNull(3)){ 
 			File imgFile = new  File("/data/data/il.ac.huji.todolist/files/"+cursor.getString(3)+".png");
 			Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-			//txtName.setText(cursor.getString(1) +cursor.getString(3));
 			imgV.setImageBitmap((myBitmap));
 		}
 		return view;

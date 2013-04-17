@@ -34,6 +34,18 @@
             android:name="il.ac.huji.todolist.AddThmblnlActivity"
             android:label="@string/title_activity_add_thumbnail" >
         </activity>
+        <activity
+            android:name="il.ac.huji.todolist.AddFromTweetActivity"
+            android:label="@string/title_activity_add_from_tweet" >
+        </activity>
+        <activity
+            android:name="il.ac.huji.todolist.TwittHashTagActivity"
+            android:label="@string/title_activity_tweet_hash_tag"
+            android:parentActivityName="android.preference.PreferenceActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="android.preference.PreferenceActivity" />
+        </activity>
     </application>
 
 </manifest>

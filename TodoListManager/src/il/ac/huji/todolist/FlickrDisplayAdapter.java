@@ -32,9 +32,9 @@ public class FlickrDisplayAdapter extends BaseAdapter  {
 	       ImageView imageView;
 	        if (convertView == null) {  // if it's not recycled, initialize some attributes
 	            imageView = new ImageView(_mContext);
-	            imageView.setLayoutParams(new GridView.LayoutParams(85, 85));
+	            imageView.setLayoutParams(new GridView.LayoutParams(75, 75));
 	            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-	            imageView.setPadding(8, 8, 8, 8);
+	            imageView.setPadding(7, 7, 7, 7);
 	        } else {
 	            imageView = (ImageView) convertView;
 	        }

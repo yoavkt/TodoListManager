@@ -20,6 +20,7 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.os.Environment;
@@ -78,7 +79,6 @@ public class TodoDAL {
 		return update;
 
 	}
-
 	private boolean updateLocalDB(ITodoItem todoItem) {
 		ContentValues CV = new ContentValues();
 		if (todoItem.getDueDate() != null)
@@ -88,7 +88,21 @@ public class TodoDAL {
 		return (db.update(CLASS_NAME, CV, "title=?",
 				new String[] { todoItem.getTitle() }) < 1);
 	}
+	public boolean insert(TwitterTask t){
+		return insert(t.toTask())&&insertIdTable(t);
+	}
+	public boolean insertIdTable(TwitterTask t) {
+		ContentValues values = new ContentValues();
+		values.put("twitid", t.get_twitterID());
+		return (!(db.insert("twitterId", null, values) == -1));
+	}
+	
 
+	public boolean seenThisTwiterID(TwitterTask t){
+    
+		Cursor c = db.query("twitterId",new String[] {"twitid"},null, null, null, null, null);
+		return (c.getCount()>0);
+	}
 	private boolean updateParse(ITodoItem todoItem) {
 		ParseUpdateFlag = false;
 
@@ -175,7 +189,6 @@ public class TodoDAL {
 	}
 	public boolean updatePictureParse(Bitmap bm,ITodoItem myTask) throws ParseException{
 		ParseUpdateFlag = false;
-
 		final ITodoItem tempTodo = myTask;
 		final Bitmap Fbm=bm;
 		if (tempTodo.getTitle() == null)

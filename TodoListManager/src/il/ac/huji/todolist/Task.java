@@ -2,6 +2,9 @@ package il.ac.huji.todolist;
 
 import java.util.Date;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.parse.ParseObject;
 
 import android.database.Cursor;
@@ -31,6 +34,10 @@ public class Task implements ITodoItem {
 	}
 	public Task(ParseObject i, String titleField) {
 		_taskTxt=i.getString(titleField);
+		_date=null;
+	}
+	public Task(JSONObject jsonObject) throws JSONException {
+		_taskTxt=jsonObject.getString("text");
 		_date=null;
 	}
 	public String getTitle() {

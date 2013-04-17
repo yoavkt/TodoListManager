@@ -34,7 +34,7 @@ public class AddThmblnlActivity extends Activity {
 	private Context thisForm;
 	private String selePicURL;
 	private ArrayList<FlickrImage> flickrARR = new ArrayList<FlickrImage>();
-	private ArrayList<Bitmap> imageFromFlickr = new ArrayList<Bitmap>();
+	private ArrayList<Bitmap> imageFromFlickr ;
 	ImageAdapter FIA;
 	FlickrDisplayAdapter adapter;
 
@@ -56,31 +56,16 @@ public class AddThmblnlActivity extends Activity {
 					// thread attempt
 					FlickrHandler fh=new FlickrHandler();
 					try {
-						flickrARR=fh.getImageArrayListFromFlickr(searchString);
+						flickrARR=fh.getArrayListFromWebService(searchString);
 					} catch (Exception e) {
 						e.printStackTrace();
 					} 
 					FIA = new ImageAdapter(thisForm);
 					GridView gridview = (GridView) findViewById(R.id.gridViewTHMB);
 					gridview.setAdapter(FIA);
-					new  ImageDownloader().execute();
-					//new FlickrDisplayAsyncTask().execute();
-					
-					// (new FlickrDisplayAsyncTask(AddThmblnlActivity.this,
-					// gridview)).execute(searchString);
-
-					// bl
-
-					/*
-					 * FlickrHandler fh=new FlickrHandler(); try {
-					 * flickrARR=fh.getImageArrayListFromFlickr(searchString); }
-					 * catch (IOException e) { e.printStackTrace(); } catch
-					 * (JSONException e) { e.printStackTrace(); }
-					 * 
-					 * 
-					 * gridview.setAdapter(new FlickrDisplayAdapter(thisForm,
-					 * flickrARR));
-					 */
+					final ImageDownloader d=new  ImageDownloader();
+					imageFromFlickr=new ArrayList<Bitmap>(flickrARR.size());
+					d.execute();
 					gridview.setOnItemClickListener(new OnItemClickListener() {
 						public void onItemClick(AdapterView<?> parent, View v,
 								int position, long id) {
@@ -93,6 +78,7 @@ public class AddThmblnlActivity extends Activity {
 							resultIntent.putExtra("thumbnailPic", flickrARR
 									.get(position).getImageAsBitMap());
 							setResult(RESULT_OK, resultIntent);
+							d.cancel(false);
 							finish();
 						}
 					});
@@ -105,6 +91,7 @@ public class AddThmblnlActivity extends Activity {
 				new OnClickListener() {
 					public void onClick(View v) {
 						setResult(RESULT_CANCELED);
+						
 						finish();
 					}
 				});
@@ -113,7 +100,7 @@ public class AddThmblnlActivity extends Activity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
+	
 		getMenuInflater().inflate(R.menu.add_thumbnail, menu);
 		return true;
 	}
@@ -121,13 +108,9 @@ public class AddThmblnlActivity extends Activity {
 	private class ImageDownloader extends AsyncTask<Integer, Integer, String> {
 		@Override
 		public void onPreExecute() {
-			// prg=ProgressDialog.show(LazyLoadActivity.this, null,
-			// "Loading...");
 		}
 
 		protected void onPostExecute(String result) {
-			// prg.hide();
-
 		}
 
 		protected void onProgressUpdate(Integer... progress) {
@@ -135,7 +118,7 @@ public class AddThmblnlActivity extends Activity {
 		}
 
 		protected String doInBackground(Integer... a) {
-			for (int i = 0; i < flickrARR.size(); i++) {
+			for (int i = 0; i < flickrARR.size()-1; i++) {
 				imageFromFlickr.set(i, flickrARR.get(i).getImageAsBitMap());
 				this.publishProgress(i);
 			}
@@ -146,10 +129,6 @@ public class AddThmblnlActivity extends Activity {
 
 	public class ImageAdapter extends BaseAdapter {
 		private Context mContext;
-
-		// Keep all Images in array
-
-		// Constructor
 		public ImageAdapter(Context c) {
 			mContext = c;
 		}

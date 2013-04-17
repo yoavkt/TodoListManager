@@ -44,7 +44,7 @@ public class TodoListManagerActivity extends Activity {
 	private  TodoDAL todo;
 	private Cursor taskListCursor;
 	private Task myTask;
-	private boolean Testing=false;
+	private boolean Testing=true;
 	//private ArrayAdapter<Task> adapter;
     
 	private SQLiteDatabase myDB;
@@ -64,26 +64,35 @@ public class TodoListManagerActivity extends Activity {
 
     	adapter = new TaskDisplayAdapter(this, taskListCursor, from, to);
     	listViewTasks.setAdapter(adapter);
-    	
+    	populateFromTweets();
     	todo=new TodoDAL(this);
         if (Testing){
         	try {
 				toTest();
-			} catch (IOException e) {
+			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			} 
         }
 
     }
-    public void toTest() throws IOException, JSONException{
-    	FlickrHandler fh=new FlickrHandler();
-    	 Bitmap b=fh.getImageArrayListFromFlickr("cat").get(0).getImageAsBitMap();
+    private void populateFromTweets() {
+		// TODO Auto-generated method stub
+		
+	}
+	public void toTest() throws IOException, JSONException{
+    	TwitterHandler th=new TwitterHandler();
+    	Boolean c;
+    	ArrayList<TwitterTask> t=th.getArrayListFromWebService("todolist");
+    	String s1=t.get(0).getTitle();
+    	String s2=t.get(1).getTitle();
+    	int num=t.size();
+    	s2=s2+"";
+    	TwitterTask tw;
     	TodoDAL td=new TodoDAL(this);
-    	td.saveImage(b, "Cat");
+    	boolean insertFalg=td.insertIdTable(tw=new TwitterTask("Hello",new Date(),"11"));
+    	boolean existFlag=td.seenThisTwiterID(tw);
+    	c=existFlag&insertFalg;	
     }
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,ContextMenuInfo menuInfo) {
@@ -105,12 +114,16 @@ public class TodoListManagerActivity extends Activity {
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-		
+    	Intent intent;
     	switch (item.getItemId()) {
     		case R.id.menuItemAdd:
-    			Intent intent = new Intent(this, AddNewTodoItemActivity.class);
+    			 intent = new Intent(this, AddNewTodoItemActivity.class);
     		    startActivityForResult(intent,1986);
     			break;
+    		case R.id.menuItemAddFromTweet:
+        			intent = new Intent(this, TwittHashTagActivity.class);
+        		    startActivityForResult(intent,1988);
+        			break;
     	}
      return true;
     }
@@ -134,9 +147,7 @@ public class TodoListManagerActivity extends Activity {
 				taskCursor.moveToPosition(info.position);
 				Intent intent = new Intent(this, AddThmblnlActivity.class);
    		     	startActivityForResult(intent,1987);
-
-			break;
-			
+			break;	
 		}
 		return true;
 	}
@@ -150,9 +161,11 @@ public class TodoListManagerActivity extends Activity {
 		}
 		if (requestCode == 1987 && resultCode == RESULT_OK) {
 			FlickrHandler fh=new FlickrHandler();
-			
 			todo.updatePicture(data.getStringExtra(PICTURE),data.getStringExtra("thumbnailId"),myTask);	
           	taskListCursor.requery();
+		}
+		if (requestCode == 1988 && resultCode == RESULT_OK) {
+			populateFromTweets();
 		}
     }
 	
