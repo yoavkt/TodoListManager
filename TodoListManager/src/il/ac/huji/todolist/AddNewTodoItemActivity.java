@@ -25,9 +25,8 @@ public class AddNewTodoItemActivity extends Activity {
 				DatePicker datePicker=(DatePicker)findViewById(R.id.datePicker);
 				Date taskDate=new Date(datePicker.getYear() - 1900, datePicker.getMonth(), datePicker.getDayOfMonth());
 				Intent resultIntent = new Intent();
-				
 				resultIntent.putExtra("title", taskName);
-				resultIntent.putExtra("dueDate",taskDate );
+				resultIntent.putExtra("due",taskDate );
 				setResult(RESULT_OK, resultIntent);
 				finish();
 				

@@ -9,14 +9,14 @@ import org.json.JSONObject;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-public class flickrImage {
+public class FlickrImage {
 	private String _photoID;
 	private String _farmID;
 	private String _serverID;
 	private String _secret;
 	private String _title;
 
-	flickrImage(String photoID, String farmID, String serverID, String secret,
+	FlickrImage(String photoID, String farmID, String serverID, String secret,
 			String title) {
 		_photoID = photoID;
 		_title = title;
@@ -25,7 +25,7 @@ public class flickrImage {
 		_secret = secret;
 	}
 
-	public flickrImage(JSONObject jsonObject) throws JSONException {
+	public FlickrImage(JSONObject jsonObject) throws JSONException {
 		_photoID=jsonObject.getString("id");
 		_farmID=jsonObject.getString("farm");
 		_title=jsonObject.getString("title");
@@ -91,8 +91,7 @@ public class flickrImage {
 		try {
 			String s=getStaticLocation();
 			URL newurl = new URL(getStaticLocation());
-			Bitmap bitmap = BitmapFactory.decodeStream(newurl.openConnection()
-					.getInputStream());
+			Bitmap bitmap = BitmapFactory.decodeStream(newurl.openConnection().getInputStream());
 			return bitmap;
 		} catch (IOException e) {
 			e.printStackTrace();

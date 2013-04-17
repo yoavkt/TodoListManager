@@ -1,5 +1,11 @@
 package il.ac.huji.todolist;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,12 +14,15 @@ import org.json.JSONObject;
 import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.os.Environment;
 
 public class TodoDAL {
 	Context _context;
@@ -23,6 +32,7 @@ public class TodoDAL {
 	private final String CLASS_NAME = "todo";
 	private final String TITLE = "title";
 	private final String DUEDATE = "due";
+	private final String THUMB= "thumbnail";
 	private boolean ParseUpdateFlag;
 	private boolean ParseDeleteFlag;
 
@@ -163,9 +173,80 @@ public class TodoDAL {
 		}
 		return list;
 	}
+	public boolean updatePictureParse(Bitmap bm,ITodoItem myTask) throws ParseException{
+		ParseUpdateFlag = false;
 
-	public boolean updatePicture(String stringExtra) {
-		// TODO Auto-generated method stub
+		final ITodoItem tempTodo = myTask;
+		final Bitmap Fbm=bm;
+		if (tempTodo.getTitle() == null)
+			return ParseUpdateFlag;
+		ParseQuery pq = new ParseQuery(CLASS_NAME);
+		pq.whereEqualTo(TITLE, tempTodo.getTitle());
+
+		pq.findInBackground(new FindCallback() {
+			@Override
+			public void done(List<ParseObject> objects, ParseException e) {
+				
+				if (objects.isEmpty())
+					return;
+				for (ParseObject po : objects) {
+						ByteArrayOutputStream stream = new ByteArrayOutputStream();
+						//Fbm.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+						byte[] byteArray = stream.toByteArray();
+						ParseFile file = new ParseFile(byteArray);
+						try {
+							file.save();
+						} catch (ParseException e1) {
+							e1.printStackTrace();
+						} 
+						po.put(THUMB, file);
+						po.saveInBackground();
+				
+					ParseUpdateFlag = true;
+				}
+
+			}
+		});
+		return ParseUpdateFlag;
+
+	}
+	public boolean updatePictureLocal(String thubID,ITodoItem myTask){
+		ContentValues CV = new ContentValues();
+		if (thubID != null)
+			CV.put("thumbnail", thubID);
+		else
+			CV.putNull("thumbnail");
+		Boolean flag= (db.update(CLASS_NAME, CV, "title=?",
+				new String[] { myTask.getTitle() }) < 1);
+		return flag;
+	}
+	public boolean saveImage(Bitmap bm, String thumbId) throws IOException {
+			File direct = new File("/data/data/il.ac.huji.todolist"+"/files");
+			if(!direct.exists())
+			        direct.mkdir(); 
+			File file = new File("/data/data/il.ac.huji.todolist"+"/files" , thumbId + ".png");
+		    FileOutputStream fOut = new FileOutputStream(file);
+		    bm.compress(Bitmap.CompressFormat.PNG, 100, fOut);
+		    fOut.flush();
+		    fOut.close();
+
 		return true;
+	}
+	public boolean updatePicture(String url, String thumbId, ITodoItem myTask) {
+		 	FlickrHandler fh=new FlickrHandler();
+		 	Bitmap bm=fh.getImageViaURL(url);
+		try {	
+				updatePictureLocal(thumbId,myTask);
+				 updatePictureParse(bm,myTask);
+				 saveImage(bm,thumbId);
+				 return updatePictureLocal(thumbId,myTask);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
 	}
 }

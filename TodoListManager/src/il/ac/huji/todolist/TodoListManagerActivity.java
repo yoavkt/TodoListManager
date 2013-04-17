@@ -43,7 +43,8 @@ public class TodoListManagerActivity extends Activity {
 	TaskDisplayAdapter adapter;
 	private  TodoDAL todo;
 	private Cursor taskListCursor;
-	private boolean Testing=false;
+	private Task myTask;
+	private boolean Testing=true;
 	//private ArrayAdapter<Task> adapter;
     
 	private SQLiteDatabase myDB;
@@ -54,11 +55,12 @@ public class TodoListManagerActivity extends Activity {
     	setContentView(R.layout.activity_todo_list_manager);
     	ListView listViewTasks = (ListView)findViewById(R.id.lstTodoItems);
     	registerForContextMenu(listViewTasks);
+    	
     	DBHelper helper = new DBHelper(this);
     	myDB = helper.getWritableDatabase();
     	String[] from = { TITLE, DUEDATE, PICTURE};
     	int[] to = { R.id.txtTodoTitle, R.id.txtTodoDueDate, R.id.imageViewTodoThmb};
-    	taskListCursor = myDB.query(TODO,	new String[] {ID_HEADER, TITLE, DUEDATE, "thumbnail" },null, null, null, null, null);
+    	taskListCursor = myDB.query(TODO,new String[] {ID_HEADER, TITLE, DUEDATE ,PICTURE},null, null, null, null, null);
 
     	adapter = new TaskDisplayAdapter(this, taskListCursor, from, to);
     	listViewTasks.setAdapter(adapter);
@@ -78,8 +80,10 @@ public class TodoListManagerActivity extends Activity {
 
     }
     public void toTest() throws IOException, JSONException{
-    	flickrHandler fh=new flickrHandler();
+    	FlickrHandler fh=new FlickrHandler();
     	 Bitmap b=fh.getImageArrayListFromFlickr("cat").get(0).getImageAsBitMap();
+    	TodoDAL td=new TodoDAL(this);
+    	td.saveImage(b, "Cat");
     }
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,ContextMenuInfo menuInfo) {
@@ -105,7 +109,7 @@ public class TodoListManagerActivity extends Activity {
     	switch (item.getItemId()) {
     		case R.id.menuItemAdd:
     			Intent intent = new Intent(this, AddNewTodoItemActivity.class);
-    		     startActivityForResult(intent,1986);
+    		    startActivityForResult(intent,1986);
     			break;
     	}
      return true;
@@ -115,7 +119,7 @@ public class TodoListManagerActivity extends Activity {
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo)item.getMenuInfo();
 	
 		Cursor taskCursor = (Cursor)adapter.getItem(info.position);
-		Task myTask= new Task(taskCursor);
+		myTask= new Task(taskCursor);
 		switch (item.getItemId()){
 			case R.id.menuItemCall:
 				Intent dial = new Intent(Intent.ACTION_DIAL,Uri.parse(myTask.getTitle().replace(CALL_STRING, TELE_STRING)));
@@ -130,8 +134,7 @@ public class TodoListManagerActivity extends Activity {
 				taskCursor.moveToPosition(info.position);
 				Intent intent = new Intent(this, AddThmblnlActivity.class);
    		     	startActivityForResult(intent,1987);
-   		     	int i=1;
-   		     	i++;
+
 			break;
 			
 		}
@@ -139,18 +142,17 @@ public class TodoListManagerActivity extends Activity {
 	}
 	@Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		//TODO:  change this to a switch inside an if
+		
 		if (requestCode == 1986 && resultCode == RESULT_OK) {
+			Date d=(Date) data.getSerializableExtra(DUEDATE);
 			todo.insert(new Task(data.getStringExtra(TITLE),(Date) data.getSerializableExtra(DUEDATE)));
     		taskListCursor.requery();
 		}
 		if (requestCode == 1987 && resultCode == RESULT_OK) {
-			todo.updatePicture(data.getStringExtra(PICTURE));
-			flickrHandler fh=new flickrHandler();
-			fh.downloadFromFlickr(data.getStringExtra(PICTURE));
+			FlickrHandler fh=new FlickrHandler();
+			
+			todo.updatePicture(data.getStringExtra(PICTURE),data.getStringExtra("thumbnailId"),myTask);	
           	taskListCursor.requery();
-		     	int i=1;
-		     	i++;
 		}
     }
 	

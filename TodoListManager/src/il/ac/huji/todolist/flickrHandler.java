@@ -18,7 +18,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 
-public class flickrHandler {
+public class FlickrHandler {
 	private final String flickrAPIAddress = "http://api.flickr.com/services/rest/";
 	private final String flickrAPISearch = "?method=flickr.photos.search";
 	private final String flickrAPIID = "&api_key=6478053b90635698cb4afe8e2430a657";
@@ -42,8 +42,8 @@ public class flickrHandler {
 		}
 		return buffer.toString();
 	}
-	protected ArrayList<flickrImage> getPicsFromString(String jsonResult) throws JSONException {
-		ArrayList<flickrImage> FIList = new ArrayList<flickrImage>();
+	protected ArrayList<FlickrImage> getPicsFromString(String jsonResult) throws JSONException {
+		ArrayList<FlickrImage> FIList = new ArrayList<FlickrImage>();
 		jsonResult=jsonResult.replace("jsonFlickrApi(", "");
 		jsonResult=jsonResult.replace("})", "}");
 		
@@ -51,11 +51,11 @@ public class flickrHandler {
 		JSONObject photosOBJ = json.getJSONObject("photos");
 		JSONArray arr=photosOBJ.getJSONArray("photo");
 		for (int i = 0; i < arr.length(); i++) {
-			FIList.add(new flickrImage(arr.getJSONObject(i)));
+			FIList.add(new FlickrImage(arr.getJSONObject(i)));
 		}
 		return FIList;
 	}
-	public ArrayList<flickrImage> getImageArrayListFromFlickr(String search) throws IOException, JSONException{
+	public ArrayList<FlickrImage> getImageArrayListFromFlickr(String search) throws IOException, JSONException{
 		URL url = new URL(getFlickerSearchString(search));
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		return getPicsFromString(readStream(conn.getInputStream()));
@@ -72,9 +72,5 @@ public class flickrHandler {
 		return null;
 	}
 
-	public void downloadFromFlickr(String stringExtra) {
-		// TODO Auto-generated method stub
-		
-	}
 	
 }

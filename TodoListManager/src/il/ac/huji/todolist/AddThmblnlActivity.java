@@ -31,8 +31,8 @@ public class AddThmblnlActivity extends Activity {
 	private Bitmap map;
 	private Context thisForm;
 	private String selePicURL;
-	private ArrayList<flickrImage> flickrARR=new ArrayList<flickrImage>();
-	ThumbnailDisplayAdapter adapter;
+	private ArrayList<FlickrImage> flickrARR=new ArrayList<FlickrImage>();
+	FlickrDisplayAdapter adapter;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -47,7 +47,10 @@ public class AddThmblnlActivity extends Activity {
 					((EditText)findViewById(R.id.editTextThumbnailSearch)).setText("Enter a search String");
 				}
 				else{
-					flickrHandler fh=new flickrHandler();
+					GridView gridview = (GridView) findViewById(R.id.gridViewTHMB);
+					//(new FlickrDisplayAsyncTask(AddThmblnlActivity.this, gridview)).execute(searchString);
+					
+					FlickrHandler fh=new FlickrHandler();
 					try {
 						flickrARR=fh.getImageArrayListFromFlickr(searchString);
 					} catch (IOException e) {
@@ -55,17 +58,18 @@ public class AddThmblnlActivity extends Activity {
 					} catch (JSONException e) {
 						e.printStackTrace();
 					}
-
-				
-					GridView gridview = (GridView) findViewById(R.id.gridViewTHMB);
-				    gridview.setAdapter(new ThumbnailDisplayAdapter(thisForm, flickrARR));
+					
+						
+					gridview.setAdapter(new FlickrDisplayAdapter(thisForm, flickrARR));
+				    
 				    
 				    gridview.setOnItemClickListener(new OnItemClickListener() {
 				        public void onItemClick(AdapterView<?> parent, View v, int position, long id){
 				        	selePicURL=flickrARR.get(position).getStaticLocation();
 						    Intent resultIntent = new Intent();
 							resultIntent.putExtra("thumbnail",selePicURL );
-							
+							resultIntent.putExtra("thumbnailId",flickrARR.get(position).get_flickrID() );
+							resultIntent.putExtra("thumbnailPic", flickrARR.get(position).getImageAsBitMap());
 							setResult(RESULT_OK, resultIntent);
 							finish();
 				        }
