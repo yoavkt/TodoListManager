@@ -56,12 +56,12 @@ public class TaskDisplayAdapter extends SimpleCursorAdapter {
 				txtName.setTextColor(Color.RED);
 			}
 		}
-		txtName.setText(cursor.getString(1) +" No img");
+		txtName.setText(cursor.getString(1));
 		FlickrHandler fh=new FlickrHandler();
 		if (!cursor.isNull(3)){ 
 			File imgFile = new  File("/data/data/il.ac.huji.todolist/files/"+cursor.getString(3)+".png");
 			Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-			txtName.setText(cursor.getString(1) +cursor.getString(3));
+			//txtName.setText(cursor.getString(1) +cursor.getString(3));
 			imgV.setImageBitmap((myBitmap));
 		}
 		return view;

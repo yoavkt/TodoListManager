@@ -44,7 +44,7 @@ public class TodoListManagerActivity extends Activity {
 	private  TodoDAL todo;
 	private Cursor taskListCursor;
 	private Task myTask;
-	private boolean Testing=true;
+	private boolean Testing=false;
 	//private ArrayAdapter<Task> adapter;
     
 	private SQLiteDatabase myDB;
