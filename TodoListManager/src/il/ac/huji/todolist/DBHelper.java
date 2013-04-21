@@ -21,8 +21,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int arg1, int arg2) {
-		// TODO Auto-generated method stub
-	//	db.execSQL("ALTER TABLE todo ADD thumbnail text AFTER due;");
+		
+		db.execSQL("ALTER TABLE todo ADD thumbnail text AFTER due;");
 		db.execSQL("create table twitterId ( _id integer primary key autoincrement,"
 				+ " twitid text);");
 	}

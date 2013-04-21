@@ -15,6 +15,7 @@ public class FlickrImage {
 	private String _serverID;
 	private String _secret;
 	private String _title;
+	private Bitmap _thmb;
 
 	FlickrImage(String photoID, String farmID, String serverID, String secret,
 			String title) {
@@ -23,6 +24,7 @@ public class FlickrImage {
 		_farmID = farmID;
 		_serverID = serverID;
 		_secret = secret;
+		_thmb=null;
 	}
 
 	public FlickrImage(JSONObject jsonObject) throws JSONException {
@@ -30,9 +32,7 @@ public class FlickrImage {
 		_farmID=jsonObject.getString("farm");
 		_title=jsonObject.getString("title");
 		_secret=jsonObject.getString("secret");
-		_serverID=jsonObject.getString("server");
-		
-				
+		_serverID=jsonObject.getString("server");	
 	}
 
 	public String get_flickrID() {
@@ -86,12 +86,18 @@ public class FlickrImage {
 	public String getStaticLocation() {
 		return "http://farm"+_farmID+".staticflickr.com/"+_serverID+"/"+_photoID+"_"+_secret+"_m.jpg";
 		}
-
+	public Bitmap get_thmb(Boolean download) {
+		if (_thmb==null)
+			if(download)
+				_thmb=getImageAsBitMap();
+			return _thmb;
+	}
 	public Bitmap getImageAsBitMap() {
 		try {
 			String s=getStaticLocation();
 			URL newurl = new URL(getStaticLocation());
 			Bitmap bitmap = BitmapFactory.decodeStream(newurl.openConnection().getInputStream());
+			_thmb=bitmap;
 			return bitmap;
 		} catch (IOException e) {
 			e.printStackTrace();

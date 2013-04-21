@@ -6,7 +6,7 @@
     android:layout_marginLeft="20dp"
     android:layout_marginRight="20dp"
     android:gravity="top"
-    tools:context=".AddThmblnlActivity" >
+    tools:context=".AddFlickrTHMActivity" >
 
     <EditText
         android:id="@+id/editTextThumbnailSearch"
@@ -33,8 +33,8 @@
         android:id="@+id/btnTHBCancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/gridViewTHMB"
         android:layout_alignRight="@+id/editTextThumbnailSearch"
+        android:layout_below="@id/editTextThumbnailSearch"
         android:text="Cancel" />
 
     <Button

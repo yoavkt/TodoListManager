@@ -7,9 +7,11 @@
     <string name="title_activity_add_new_todo_item">AddNewTodoItemActivity</string>
     <string name="parseApplication">NaEEoOzHnxvom1sy64RTMQwzmMXlHpL5XRvvvCoa</string>
     <string name="clientKey">pPR7u3HxoPX3ZOYCHR0Aps2a9Q35NZcnsBuqvVsF</string>
-    <string name="title_activity_add_thumbnail">AddThumbnailActivity</string>
-    <string name="title_activity_add_from_tweet">AddFromTweetActivity</string>
+    <string name="title_activity_add_thumbnail">Add Thumbnail</string>
+    <string name="title_activity_add_from_tweet">Add From Twittes </string>
     <string name="tweetInstructString">Enter your Tweet Tag</string>
-    <string name="title_activity_tweet_hash_tag">TweetHashTagActivity</string>
+    <string name="title_activity_tweet_hash_tag">Choose hash tag</string>
+    <string name="title_activity_add_task_from_twitter_yes_no">Do you wish to add tasks from twitter</string>
+    <string name="title_activity_change_hash_tag">ChangeHashTagActivity</string>
 
 </resources>

@@ -101,7 +101,17 @@ public class TodoDAL {
 	public boolean seenThisTwiterID(TwitterTask t){
     
 		Cursor c = db.query("twitterId",new String[] {"twitid"},null, null, null, null, null);
-		return (c.getCount()>0);
+		if(c.moveToFirst())
+			do {
+				String id=c.getString(0);
+				if (id.matches(t.get_twitterID())){
+					c.close();
+					return true;
+					}
+			} while(c.moveToNext());
+		c.close();
+		return false;
+		
 	}
 	private boolean updateParse(ITodoItem todoItem) {
 		ParseUpdateFlag = false;
@@ -204,7 +214,7 @@ public class TodoDAL {
 					return;
 				for (ParseObject po : objects) {
 						ByteArrayOutputStream stream = new ByteArrayOutputStream();
-						//Fbm.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+			
 						byte[] byteArray = stream.toByteArray();
 						ParseFile file = new ParseFile(byteArray);
 						try {
@@ -234,10 +244,10 @@ public class TodoDAL {
 		return flag;
 	}
 	public boolean saveImage(Bitmap bm, String thumbId) throws IOException {
-			File direct = new File("/data/data/il.ac.huji.todolist"+"/files");
+			File direct = new File("/data/data/il.ac.huji.todolist/files");
 			if(!direct.exists())
 			        direct.mkdir(); 
-			File file = new File("/data/data/il.ac.huji.todolist"+"/files" , thumbId + ".png");
+			File file = new File("/data/data/il.ac.huji.todolist/files" , thumbId + ".png");
 		    FileOutputStream fOut = new FileOutputStream(file);
 		    bm.compress(Bitmap.CompressFormat.PNG, 100, fOut);
 		    fOut.flush();
@@ -253,13 +263,18 @@ public class TodoDAL {
 				 updatePictureParse(bm,myTask);
 				 saveImage(bm,thumbId);
 				 return updatePictureLocal(thumbId,myTask);
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return false;
 	}
+
+	public void insert(ArrayList<TwitterTask> twittesToAddToTask) {
+		for (TwitterTask twitterTask : twittesToAddToTask) {
+			this.insert(twitterTask.toTask());
+		}
+		
+	}
+
+
 }

@@ -34,7 +34,7 @@ public class AddNewTodoItemActivity extends Activity {
 				
 		});
 		
-		findViewById(R.id.btnTweetCancel).setOnClickListener(new OnClickListener() {
+		findViewById(R.id.btnTwitCancel).setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				setResult(RESULT_CANCELED);
 				finish();

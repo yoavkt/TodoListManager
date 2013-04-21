@@ -31,7 +31,7 @@
             android:theme="@android:style/Theme.Dialog" >
         </activity>
         <activity
-            android:name="il.ac.huji.todolist.AddThmblnlActivity"
+            android:name="il.ac.huji.todolist.AddFlickrTHMActivity"
             android:label="@string/title_activity_add_thumbnail" >
         </activity>
         <activity
@@ -39,12 +39,17 @@
             android:label="@string/title_activity_add_from_tweet" >
         </activity>
         <activity
-            android:name="il.ac.huji.todolist.TwittHashTagActivity"
-            android:label="@string/title_activity_tweet_hash_tag"
-            android:parentActivityName="android.preference.PreferenceActivity" >
+            android:name="il.ac.huji.todolist.ChangeHashTagActivity"
+            android:label="@string/title_activity_tweet_hash_tag">
+             
+        <!--     android:parentActivityName="android.preference.PreferenceActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="android.preference.PreferenceActivity" />
+                android:value="android.preference.PreferenceActivity" /> -->
+       </activity>
+        <activity
+            android:name="il.ac.huji.todolist.AddTaskFromTwitterYesNo"
+            android:label="@string/title_activity_add_task_from_twitter_yes_no" >
         </activity>
     </application>
 
