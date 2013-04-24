@@ -26,23 +26,28 @@ import android.graphics.Bitmap;
 import android.os.Environment;
 
 public class TodoDAL {
+	
 	Context _context;
 	private SQLiteDatabase db;
 	boolean delete = true;
 	protected boolean update;
 	private final String CLASS_NAME = "todo";
 	private final String TITLE = "title";
+	private final String TITLEPARAM = "title"+"=?";
 	private final String DUEDATE = "due";
 	private final String THUMB= "thumbnail";
+	
+	private final String TWITTERIDFIELD="twitid";
+	private final String TWITTERIDFIELDPARSAM=TWITTERIDFIELD+"=?";
+	private final String TWITTERDB="twitterId";
 	private boolean ParseUpdateFlag;
 	private boolean ParseDeleteFlag;
+	private String parsAppID="NaEEoOzHnxvom1sy64RTMQwzmMXlHpL5XRvvvCoa";
+	private String clientID="pPR7u3HxoPX3ZOYCHR0Aps2a9Q35NZcnsBuqvVsF";
 
 	public TodoDAL(Context context) {
 		_context = context;
-
-		Parse.initialize(_context, "NaEEoOzHnxvom1sy64RTMQwzmMXlHpL5XRvvvCoa",
-				"pPR7u3HxoPX3ZOYCHR0Aps2a9Q35NZcnsBuqvVsF");
-
+		Parse.initialize(_context, parsAppID,clientID);
 		DBHelper helper = new DBHelper(_context);
 		db = helper.getWritableDatabase();
 		ParseUser.enableAutomaticUser();
@@ -85,7 +90,7 @@ public class TodoDAL {
 			CV.put(DUEDATE, todoItem.getDueDate().getTime());
 		else
 			CV.putNull(DUEDATE);
-		return (db.update(CLASS_NAME, CV, "title=?",
+		return (db.update(CLASS_NAME, CV, TITLEPARAM,
 				new String[] { todoItem.getTitle() }) < 1);
 	}
 	public boolean insert(TwitterTask t){
@@ -93,14 +98,14 @@ public class TodoDAL {
 	}
 	public boolean insertIdTable(TwitterTask t) {
 		ContentValues values = new ContentValues();
-		values.put("twitid", t.get_twitterID());
-		return (!(db.insert("twitterId", null, values) == -1));
+		values.put(TWITTERIDFIELD, t.get_twitterID());
+		return (!(db.insert(TWITTERDB, null, values) == -1));
 	}
 	
 
 	public boolean seenThisTwiterID(TwitterTask t){
     
-		Cursor c = db.query("twitterId",new String[] {"twitid"},null, null, null, null, null);
+		Cursor c = db.query(TWITTERDB,new String[] {TWITTERIDFIELD},null, null, null, null, null);
 		if(c.moveToFirst())
 			do {
 				String id=c.getString(0);
@@ -179,7 +184,7 @@ public class TodoDAL {
 	}
 
 	public boolean deleteLocalDB(ITodoItem todoItem) {
-		return (db.delete("todo", "title=?",
+		return (db.delete(CLASS_NAME, TITLEPARAM,
 				new String[] { todoItem.getTitle() }) < 1);
 	}
 
@@ -236,18 +241,19 @@ public class TodoDAL {
 	public boolean updatePictureLocal(String thubID,ITodoItem myTask){
 		ContentValues CV = new ContentValues();
 		if (thubID != null)
-			CV.put("thumbnail", thubID);
+			CV.put(THUMB, thubID);
 		else
-			CV.putNull("thumbnail");
-		Boolean flag= (db.update(CLASS_NAME, CV, "title=?",
+			CV.putNull(THUMB);
+		Boolean flag= (db.update(CLASS_NAME, CV, TITLEPARAM,
 				new String[] { myTask.getTitle() }) < 1);
 		return flag;
 	}
 	public boolean saveImage(Bitmap bm, String thumbId) throws IOException {
-			File direct = new File("/data/data/il.ac.huji.todolist/files");
+			File direct = new File(TodoListManagerConstants.THUMBNAIL_FILE_DIR);
 			if(!direct.exists())
 			        direct.mkdir(); 
-			File file = new File("/data/data/il.ac.huji.todolist/files" , thumbId + ".png");
+			File file = new File(TodoListManagerConstants.THUMBNAIL_FILE_DIR , thumbId 
+								+ TodoListManagerConstants.IMGFILETYPE);
 		    FileOutputStream fOut = new FileOutputStream(file);
 		    bm.compress(Bitmap.CompressFormat.PNG, 100, fOut);
 		    fOut.flush();
@@ -273,8 +279,15 @@ public class TodoDAL {
 		for (TwitterTask twitterTask : twittesToAddToTask) {
 			this.insert(twitterTask.toTask());
 		}
-		
 	}
-
+	public void clearTweetsDB(){
+		Cursor c = db.query(TWITTERDB,new String[] {TWITTERIDFIELD},null, null, null, null, null);
+		
+			do {
+				String id=c.getString(0);
+				db.delete(TWITTERDB, TWITTERIDFIELDPARSAM,new String[] { id });
+			} while(c.moveToNext());
+		c.close();
+	}
 
 }

@@ -21,9 +21,11 @@ public class ChangeHashTagActivity extends Activity  {
 		EditText hashTagName= (EditText)findViewById(R.id.editTextTweetTag);
 		try {
 			hashTagName.setText( th.getDefaultHashTag());
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
+		
 		
 		
 				findViewById(R.id.btnTwitChange).setOnClickListener(new OnClickListener() {
@@ -34,14 +36,12 @@ public class ChangeHashTagActivity extends Activity  {
 							try {
 								th.setDefaultHashTag(hashTagVal);
 								Intent resultIntent = new Intent();
-								resultIntent.putExtra("hashTag", hashTagVal);
+								resultIntent.putExtra(TodoListManagerConstants.CHANGE_HSHTAG_EXTRA, hashTagVal);
 								setResult(RESULT_OK,resultIntent);
 								finish();
 								
 							} catch (IOException e) {
 								e.printStackTrace();
-								setResult(RESULT_CANCELED);
-								finish();
 							}
 						}
 				});
@@ -58,7 +58,6 @@ public class ChangeHashTagActivity extends Activity  {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.change_hash_tag, menu);
 		return true;
 	}

@@ -4,6 +4,6 @@
         android:title="Add" />
     
      <item android:id="@+id/menuItemAddFromTweet"
-        android:title="From Tweets" />
+        android:title="Get tasks from Twitter" />
 
 </menu>

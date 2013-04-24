@@ -11,6 +11,11 @@ import android.database.Cursor;
 
 
 
+/**
+ * This class represent the base taskof this project
+ * @author yoavk_000
+ *
+ */
 public class Task implements ITodoItem {
 	public String _taskTxt;
 	public Date _date;

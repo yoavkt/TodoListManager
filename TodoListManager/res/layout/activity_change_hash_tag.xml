@@ -17,16 +17,6 @@
         android:layout_marginTop="19dp"
         android:text="@string/tweetInstructString" />
 
-    <Button
-        android:id="@+id/btnTwitChange"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/editTextTweetTag"
-        android:layout_marginRight="15dp"
-        android:layout_marginTop="16dp"
-        android:layout_toLeftOf="@+id/btnTwitCancel"
-        android:text="Set Tag" />
-
     <TextView
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
@@ -54,8 +44,17 @@
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/btnTwitChange"
         android:layout_alignBottom="@+id/btnTwitChange"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="104dp"
+        android:layout_toRightOf="@+id/textViewTweetInt"
         android:text="Cancel" />
+
+    <Button
+        android:id="@+id/btnTwitChange"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/editTextTweetTag"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="17dp"
+        android:text="Set Tag" />
 
 </RelativeLayout>

@@ -47,30 +47,31 @@ public class AddFlickrTHMActivity extends Activity {
 		findViewById(R.id.btnTHBOK).setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
-
+			
 				String searchString = ((EditText) findViewById(R.id.editTextThumbnailSearch))
 						.getText().toString();
+				// only f the user actually looks for something
 				if (searchString == "") {
 					((EditText) findViewById(R.id.editTextThumbnailSearch))
-							.setText("Enter a search String");
+							.setText(TodoListManagerConstants.THUMBNAIL_ACTIVITY_TEXTVIEW_DEFAULT);
 				} else {
-
+					// if there is a valid search string
 					gridview = (GridView) findViewById(R.id.gridViewTHMB);
 					FIA = new ImageAdapter(thisForm);
 					gridview.setAdapter(FIA);
+					
 					final ImageDownloader flickrLoader=new  ImageDownloader(AddFlickrTHMActivity.this, searchString);
 					flickrLoader.execute();
+					// we are listening for the user to choose a certain pic
 					gridview.setOnItemClickListener(new OnItemClickListener() {
 						public void onItemClick(AdapterView<?> parent, View v,
 								int position, long id) {
 							selePicURL = flickrARR.get(position)
 									.getStaticLocation();
 							Intent resultIntent = new Intent();
-							resultIntent.putExtra("thumbnail", selePicURL);
-							resultIntent.putExtra("thumbnailId",
+							resultIntent.putExtra(TodoListManagerConstants.THUMBNAIL_ACTIVITY_EXTRA_URL, selePicURL);
+							resultIntent.putExtra(TodoListManagerConstants.THUMBNAIL_ACTIVITY_EXTRA_ID,
 									flickrARR.get(position).get_flickrID());
-							resultIntent.putExtra("thumbnailPic", flickrARR
-									.get(position).getImageAsBitMap());
 							setResult(RESULT_OK, resultIntent);
 							flickrLoader.cancel(false);
 							finish();
@@ -97,6 +98,11 @@ public class AddFlickrTHMActivity extends Activity {
 		return true;
 	}
 
+	/**
+	 * This thread handles the downloading from twitter process
+	 * @author yoavk_000
+	 *
+	 */
 	private class ImageDownloader extends AsyncTask<Integer, Integer, String> {
 	
 		private ProgressDialog _progressDialog;
@@ -104,13 +110,14 @@ public class AddFlickrTHMActivity extends Activity {
 		
 		public ImageDownloader(Context con, String searchString) {
 			_progressDialog=new ProgressDialog(con);
-			_progressDialog.setTitle("Searching Flickr");
-			_progressDialog.setMessage("Image will start to appear when \n I will finish searching");
+			_progressDialog.setTitle(TodoListManagerConstants.THUMBNAIL_ACTIVITY_PROGRESS_HEADER);
+			_progressDialog.setMessage(TodoListManagerConstants.THUMBNAIL_ACTIVITY_PROGRESS_INITIAL_MESSAGE);
 			_progressDialog.setCancelable(false);
 			
 		}
 		@Override
 		public void onPreExecute() {
+			// here we get on the names of the pics the json string
 			_progressDialog.show();
 			try {
 				flickrARR=fh.getArrayListFromWebService(_searchString);
@@ -125,8 +132,10 @@ public class AddFlickrTHMActivity extends Activity {
 		}
 
 		protected void onProgressUpdate(Integer... progress) {
+			// here we close the dialogue after the first image display
 			if (progress[0]==0)
 				_progressDialog.dismiss();
+			//we notify the adapter to refresh the data displayed
 			FIA.notifyDataSetChanged();
 			super.onProgressUpdate(progress);
 		}
@@ -134,6 +143,7 @@ public class AddFlickrTHMActivity extends Activity {
 		protected String doInBackground(Integer... a) {
 			
 			for (int i = 0; i < flickrARR.size(); i++) {
+				//downloading the pic
 				flickrARR.get(i).get_thmb(true);	
 				this.publishProgress(i);
 			}

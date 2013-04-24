@@ -25,8 +25,8 @@ public class AddNewTodoItemActivity extends Activity {
 				DatePicker datePicker=(DatePicker)findViewById(R.id.datePicker);
 				Date taskDate=new Date(datePicker.getYear() - 1900, datePicker.getMonth(), datePicker.getDayOfMonth());
 				Intent resultIntent = new Intent();
-				resultIntent.putExtra("title", taskName);
-				resultIntent.putExtra("due",taskDate );
+				resultIntent.putExtra(TodoListManagerConstants.NEWTODO_ACTIVITY_EXTRA_TITLE, taskName);
+				resultIntent.putExtra(TodoListManagerConstants.NEWTODO_ACTIVITY_EXTRA_DATE,taskDate );
 				setResult(RESULT_OK, resultIntent);
 				finish();
 				
@@ -45,7 +45,6 @@ public class AddNewTodoItemActivity extends Activity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.add_new_todo_item, menu);
 		return true;
 	}

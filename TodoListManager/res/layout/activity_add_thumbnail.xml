@@ -8,16 +8,6 @@
     android:gravity="top"
     tools:context=".AddFlickrTHMActivity" >
 
-    <EditText
-        android:id="@+id/editTextThumbnailSearch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="18dp"
-        android:ems="10" />
-
     <GridView
         android:id="@+id/gridViewTHMB"
         android:layout_width="fill_parent"
@@ -34,15 +24,39 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignRight="@+id/editTextThumbnailSearch"
-        android:layout_below="@id/editTextThumbnailSearch"
+        android:layout_below="@+id/editTextThumbnailSearch"
+        android:layout_marginTop="26dp"
         android:text="Cancel" />
 
     <Button
         android:id="@+id/btnTHBOK"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/btnTHBCancel"
+        android:layout_alignBottom="@+id/btnTHBCancel"
         android:layout_alignLeft="@+id/editTextThumbnailSearch"
-        android:layout_below="@+id/editTextThumbnailSearch"
         android:text="OK" />
+
+    <EditText
+        android:id="@+id/editTextThumbnailSearch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView1"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:ems="10" >
+
+        <requestFocus />
+    </EditText>
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="16dp"
+        android:text="Enter search string"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
 </RelativeLayout>

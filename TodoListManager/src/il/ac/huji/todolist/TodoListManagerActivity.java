@@ -9,6 +9,7 @@ import java.util.Date;
 
 import org.json.JSONException;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -34,6 +35,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+@SuppressLint("SimpleDateFormat")
 public class TodoListManagerActivity extends Activity {
 	private static final String TITLE = "title";
 	private static final String DUEDATE = "due";
@@ -46,12 +48,14 @@ public class TodoListManagerActivity extends Activity {
 	private final String TODO="todo";
 	
 	TaskDisplayAdapter adapter;
+	// the twitter web sevice handler
 	private TwitterHandler th=new TwitterHandler();
+	// a list for the to add 
 	private ArrayList<TwitterTask> twittesToAddToTask;
 	private  TodoDAL todo;
 	private Cursor taskListCursor;
 	private Task myTask;
-	private boolean Testing=false;
+
 	private SQLiteDatabase myDB;
 	TwitterTaskDownloader twitterLoader;
     @Override
@@ -60,39 +64,35 @@ public class TodoListManagerActivity extends Activity {
     	setContentView(R.layout.activity_todo_list_manager);
     	ListView listViewTasks = (ListView)findViewById(R.id.lstTodoItems);
     	registerForContextMenu(listViewTasks);
+    	//organizing the data bases
     	todo=new TodoDAL(this);
     	DBHelper helper = new DBHelper(this);
     	myDB = helper.getWritableDatabase();
     	twittesToAddToTask=new ArrayList<TwitterTask>();
+    	
     	String[] from = { TITLE, DUEDATE, PICTURE};
     	int[] to = { R.id.txtTodoTitle, R.id.txtTodoDueDate, R.id.imageViewTodoThmb};
     	taskListCursor = myDB.query(TODO,new String[] {ID_HEADER, TITLE, DUEDATE ,PICTURE},null, null, null, null, null);
-    	
+    	//diaplying tasks
     	adapter = new TaskDisplayAdapter(this, taskListCursor, from, to);
     	listViewTasks.setAdapter(adapter);
+    	// setting the from twitter thread
     	twitterLoader=new TwitterTaskDownloader(TodoListManagerActivity.this );
-       
-    	
-    	
     	try {
-			twitterLoader.execute(th.getDefaultHashTag());
+    		//if we have a default hsh tag will use it if not we will
+    		//create a file with a default todoapp tag
+    		if (th.defaultTagFileExists())
+    			twitterLoader.execute(th.getDefaultHashTag());
+    		else{
+    			th.setDefaultHashTag(TodoListManagerConstants.DEFAULT_HASH_TAG);
+    			//starting the thread
+    			twitterLoader.execute(TodoListManagerConstants.DEFAULT_HASH_TAG);
+    		}
 		} catch (IOException e) {
-			
+			// we shouldn't get here only if we have file system problem
 		}
-    	 if (Testing) toTest();
+    	 
         
-    }
-	public void toTest(){
-		String s="";
-		try {
-			th.setDefaultHashTag("yoavtodoapp");
-			 s=th.getDefaultHashTag();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		s=s+"dfg";
     }
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,ContextMenuInfo menuInfo) {
@@ -118,15 +118,16 @@ public class TodoListManagerActivity extends Activity {
     	switch (item.getItemId()) {
     		case R.id.menuItemAdd:
     			 intent = new Intent(this, AddNewTodoItemActivity.class);
-    		    startActivityForResult(intent,1986);
+    		    startActivityForResult(intent,TodoListManagerConstants.ADD_NEW_TASK);
     			break;
     		case R.id.menuItemAddFromTweet:
         			intent = new Intent(this, ChangeHashTagActivity.class);
-        		    startActivityForResult(intent,1988);
+        		    startActivityForResult(intent,TodoListManagerConstants.HASH_TAG_CHANGED);
         			break;
     	}
      return true;
     }
+	@SuppressWarnings("deprecation")
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo)item.getMenuInfo();
@@ -146,30 +147,36 @@ public class TodoListManagerActivity extends Activity {
 			case R.id.menuItemThumbnail:
 				taskCursor.moveToPosition(info.position);
 				Intent intent = new Intent(this, AddFlickrTHMActivity.class);
-   		     	startActivityForResult(intent,1987);
+   		     	startActivityForResult(intent,TodoListManagerConstants.ADD_NEW_PIC);
 			break;	
 		}
 		return true;
 	}
+	@SuppressWarnings("deprecation")
 	@Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		
-		if (requestCode == 1986 && resultCode == RESULT_OK) {
+		if (requestCode == TodoListManagerConstants.ADD_NEW_TASK && resultCode == RESULT_OK) {
 			todo.insert(new Task(data.getStringExtra(TITLE),(Date) data.getSerializableExtra(DUEDATE)));
     		taskListCursor.requery();
 		}
-		if (requestCode == 1987 && resultCode == RESULT_OK) {
-			todo.updatePicture(data.getStringExtra(PICTURE),data.getStringExtra("thumbnailId"),myTask);	
+		if (requestCode == TodoListManagerConstants.ADD_NEW_PIC && resultCode == RESULT_OK) {
+			todo.updatePicture(data.getStringExtra(PICTURE),
+					data.getStringExtra(TodoListManagerConstants.THUMBNAIL_ACTIVITY_EXTRA_ID),myTask);	
           	taskListCursor.requery();
 		}
-		if (requestCode == 1988 && resultCode == RESULT_OK) {
-			(new TwitterTaskDownloader(TodoListManagerActivity.this)).execute(data.getStringExtra("hashTag"));
+		if (requestCode == TodoListManagerConstants.HASH_TAG_CHANGED && resultCode == RESULT_OK) {
+			(new TwitterTaskDownloader(TodoListManagerActivity.this)).execute(
+										data.getStringExtra(TodoListManagerConstants.CHANGE_HSHTAG_EXTRA));
           	taskListCursor.requery();
 		}
-		if (requestCode == 1989 && resultCode == RESULT_OK) {
+		if (requestCode == TodoListManagerConstants.ADD_NEW_TASK_FROM_TWITTER && resultCode == RESULT_OK) {
 			todo.insert(twittesToAddToTask);
 			taskListCursor.requery();
 			
+		}
+		if (requestCode == TodoListManagerConstants.ADD_NEW_TASK_FROM_TWITTER && resultCode == RESULT_CANCELED) {
+			twittesToAddToTask=new ArrayList<TwitterTask>();
 		}
     }
 	protected class TaskDisplayAdapter extends SimpleCursorAdapter {
@@ -177,6 +184,7 @@ public class TodoListManagerActivity extends Activity {
 		private Context _context;
 		private final String DUE_DATE_STRING = "No due date";
 		private final String STRING_FORMAT = "dd/MM/yyyy";
+		@SuppressWarnings("deprecation")
 		public TaskDisplayAdapter(Context context, Cursor cursor, String[] from,
 				int[] to) {
 			super(context, R.layout.row, cursor, from, to);
@@ -196,7 +204,8 @@ public class TodoListManagerActivity extends Activity {
 			TextView txtName = (TextView) view.findViewById(R.id.txtTodoTitle);
 			ImageView imgV= (ImageView) view.findViewById(R.id.imageViewTodoThmb);
 			TextView txtDate = (TextView) view.findViewById(R.id.txtTodoDueDate);
-
+			//the date handling part, if null write no date if not check if exceeding
+			//color accordingly
 			if (cursor.isNull(2))
 				txtDate.setText(DUE_DATE_STRING);
 			else {
@@ -210,27 +219,36 @@ public class TodoListManagerActivity extends Activity {
 				}
 			}
 			txtName.setText(cursor.getString(1));
+			//Handle the task thumnail
 			if (!cursor.isNull(3)){ 
-				File imgFile = new  File("/data/data/il.ac.huji.todolist/files/"+cursor.getString(3)+".png");
+				File imgFile = new  File(TodoListManagerConstants.THUMBNAIL_FILE_DIR
+											+"/"+cursor.getString(3)+
+											TodoListManagerConstants.IMGFILETYPE);
 				Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
 				imgV.setImageBitmap((myBitmap));
 			}
 			return view;
 		}
 	}
+	/**
+	 * This class is a asynctask that can serach and download tasks form twiiter
+	 * @author yoavk_000
+	 *
+	 */
 	protected class TwitterTaskDownloader extends AsyncTask<String, Integer, Integer>{
 		
 		private ProgressDialog _progressDialog;
 		private Context _todoListManagerActivity;
 		
+		
 		public TwitterTaskDownloader(Context todoListManagerActivity) {
 			_progressDialog = new ProgressDialog(todoListManagerActivity);
-			_progressDialog.setTitle("Searching Twitter");
+			_progressDialog.setTitle("Twitter");
 			_progressDialog.setCancelable(false);
 			_todoListManagerActivity=todoListManagerActivity;
 		}
 		public void onPreExecute() {
-			_progressDialog.setMessage("Connecting to Twitter");
+			_progressDialog.setMessage("Connecting");
 			_progressDialog.show();
 			super.onPreExecute();
 		}
@@ -244,6 +262,7 @@ public class TodoListManagerActivity extends Activity {
 			} 
 			
 			int i;
+			//keeping the new tw
 			for ( i = 0; i < fromTwiter.size(); i++) {
 				if(!todo.seenThisTwiterID(fromTwiter.get(i))){
 					twittesToAddToTask.add(fromTwiter.get(i));
@@ -257,13 +276,16 @@ public class TodoListManagerActivity extends Activity {
 		protected void onPostExecute(Integer result) {
 			_progressDialog.dismiss();
 			super.onPostExecute(result);
-			if(twittesToAddToTask.size()>0){
+			//once done a an activity will appear either informing the user that there
+			//are no tasks or will ask him if he want to add the tasks.
 			Intent intent = new Intent(_todoListManagerActivity, AddTaskFromTwitterYesNo.class);
-			intent.putExtra("NumOfTasks", twittesToAddToTask.size());
-		    startActivityForResult(intent,1989);}
-		}
+			intent.putExtra(TodoListManagerConstants.TASK_FROM_TWITTER_EXTRA_NUM_OF_TASKS, 
+						twittesToAddToTask.size());
+		    startActivityForResult(intent,TodoListManagerConstants.ADD_NEW_TASK_FROM_TWITTER);
+		    }
+		
 		protected void onProgressUpdate(Integer... progress) {
-			_progressDialog.setMessage("found " +Integer.toString(progress[0])+" new tasks so far" );
+			_progressDialog.setMessage("found " +Integer.toString(progress[0])+" new tasks..." );
 			super.onProgressUpdate(progress);
 		}
 	}

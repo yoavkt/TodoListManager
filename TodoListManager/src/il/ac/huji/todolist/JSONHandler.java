@@ -10,6 +10,13 @@ import java.util.ArrayList;
 
 import org.json.JSONException;
 
+/**
+ * This object is a basic JSON based web server handler
+ * This is an abstract class that has the methoes of converting the web stream to a json string.
+ * You must implement the method that creates the web service string
+ * and the method that parse the json string into an array list of T objects
+ * @param <T> the type of object to be returned after the json stringis parsed
+ */
 public abstract class JSONHandler<T> {
 
 	protected String readStream(InputStream in) throws IOException {

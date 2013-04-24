@@ -23,12 +23,12 @@ public class FlickrHandler extends JSONHandler<FlickrImage> {
 	private  String flickrAPISearch = "?method=flickr.photos.search";
 	private  String flickrAPIID = "&api_key=6478053b90635698cb4afe8e2430a657";
 	private  String getInJSONFormat = ";&format=json&jsoncallback=?";
-	private  String forDeb="http://search.twitter.com/search.json?q=hebrew%20university ";
-	private  String forDeb2="https://maps.googleapis.com/maps/api/geocode/json?address=jerusalem&sensor=false";
-	// http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=6478053b90635698cb4afe8e2430a657&text=cat;&format=json&jsoncallback=?
+	private String textParam="&text=";
+	private String mainJSONObject="photos";
+	private String secondaryJSONObject="photo";
 	
 	protected String getSearchString(String toSearch) {
-		return flickrAPIAddress + flickrAPISearch + flickrAPIID + "&text="
+		return flickrAPIAddress + flickrAPISearch + flickrAPIID + textParam
 				+ toSearch + getInJSONFormat;
 	}
 	protected ArrayList<FlickrImage> getDataFromJsonString(String jsonResult) throws JSONException {
@@ -37,14 +37,20 @@ public class FlickrHandler extends JSONHandler<FlickrImage> {
 		jsonResult=jsonResult.replace("})", "}");
 		
 		JSONObject json= new JSONObject(jsonResult);
-		JSONObject photosOBJ = json.getJSONObject("photos");
-		JSONArray arr=photosOBJ.getJSONArray("photo");
+		JSONObject photosOBJ = json.getJSONObject(mainJSONObject);
+		JSONArray arr=photosOBJ.getJSONArray(secondaryJSONObject);
 		for (int i = 0; i < arr.length(); i++) {
 			FIList.add(new FlickrImage(arr.getJSONObject(i)));
 		}
 		return FIList;
 	}
 
+	/**
+	 * This method download an image from a static link this is used
+	 * When one prefer to transfer the url instead of the full flickrimage object
+	 * @param url of the image
+	 * @return the image as a bitmap
+	 */
 	public Bitmap getImageViaURL(String url){
 		try {
 			URL newurl = new URL(url);

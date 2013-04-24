@@ -34,21 +34,15 @@
             android:name="il.ac.huji.todolist.AddFlickrTHMActivity"
             android:label="@string/title_activity_add_thumbnail" >
         </activity>
-        <activity
-            android:name="il.ac.huji.todolist.AddFromTweetActivity"
-            android:label="@string/title_activity_add_from_tweet" >
-        </activity>
+       -->
         <activity
             android:name="il.ac.huji.todolist.ChangeHashTagActivity"
+            android:theme="@android:style/Theme.Dialog" 
             android:label="@string/title_activity_tweet_hash_tag">
-             
-        <!--     android:parentActivityName="android.preference.PreferenceActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="android.preference.PreferenceActivity" /> -->
        </activity>
         <activity
             android:name="il.ac.huji.todolist.AddTaskFromTwitterYesNo"
+             android:theme="@android:style/Theme.Dialog" 
             android:label="@string/title_activity_add_task_from_twitter_yes_no" >
         </activity>
     </application>
